@@ -5,6 +5,10 @@ on:
     branches:
       - dev
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   terraform:
     runs-on: ubuntu-latest
