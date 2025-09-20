@@ -1,11 +1,11 @@
-variable "cloud_provider" {
-  description = "Cloud provider to use (aws, gcp, both)."
-  type        = string
-  default     = "aws"
+variable "deploy_aws" {
+  type        = bool
+  description = "Whether to deploy AWS resources."
+  default     = true
 }
 
-variable "region" {
-  description = "Region to deploy resources."
+variable "aws_region" {
+  description = "Region to deploy AWS resources."
   type        = string
   default     = "us-west-2"
 }
