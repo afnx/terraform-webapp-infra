@@ -1,11 +1,11 @@
 variable "cloud_provider" {
-  description = "Cloud provider to use (aws, gcp, both)"
+  description = "Cloud provider to use (aws, gcp, both)."
   type        = string
   default     = "aws"
 }
 
 variable "region" {
-  description = "Region to deploy resources"
+  description = "Region to deploy resources."
   type        = string
   default     = "us-west-2"
 }
@@ -21,7 +21,7 @@ variable "subject_alternative_names" {
 }
 
 variable "tags" {
-  description = "Tags to apply to resources"
+  description = "Tags to apply to resources."
   type        = map(string)
   default = {
     Environment = "production"
