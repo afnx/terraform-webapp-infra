@@ -17,6 +17,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Cache Terraform modules and plugins
+        uses: actions/cache@v4
+        with:
+          path: |
+            .terraform
+          key: ${{ runner.os }}-terraform-${{ hashFiles('**/terraform.lock.hcl', '**/main.tf', '**/providers.tf') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-
+
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
 
