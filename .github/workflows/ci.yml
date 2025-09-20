@@ -39,7 +39,7 @@ jobs:
         run: terraform init -backend=false
 
       - name: Terraform Validate
-        run: terraform validate -var-file=terraform.tfvars
+        run: terraform validate
 
       - name: Terraform Plan (dry run)
         run: terraform plan -out=tfplan -input=false -var-file=terraform.tfvars
