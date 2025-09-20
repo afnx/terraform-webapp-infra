@@ -16,7 +16,7 @@ locals {
 }
 
 resource "aws_route53_record" "cert_validation" {
-  for_each = toset([var.domain_name] + var.subject_alternative_names)
+  for_each = toset(concat([var.domain_name], var.subject_alternative_names))
 
   zone_id = aws_route53_zone.main.id
   name    = local.dvo_map[each.value].resource_record_name
