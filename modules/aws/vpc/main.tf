@@ -10,6 +10,7 @@ resource "aws_internet_gateway" "igw" {
   tags   = var.tags
 }
 
+# tfsec:ignore:aws-ec2-no-public-ip-subnet
 resource "aws_subnet" "public" {
   count                   = length(var.public_subnet_cidrs)
   vpc_id                  = aws_vpc.main.id
@@ -72,4 +73,37 @@ resource "aws_route_table_association" "private" {
   count          = length(var.private_subnet_cidrs)
   subnet_id      = aws_subnet.private[count.index].id
   route_table_id = aws_route_table.private[count.index].id
+}
+
+resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
+  name              = "/aws/vpc/${aws_vpc.main.id}/flow-logs"
+  retention_in_days = 30
+}
+
+resource "aws_flow_log" "vpc" {
+  log_destination      = aws_cloudwatch_log_group.vpc_flow_logs.arn
+  log_destination_type = "cloud-watch-logs"
+  traffic_type         = "ALL"
+  vpc_id               = aws_vpc.main.id
+  iam_role_arn         = aws_iam_role.vpc_flow_logs.arn
+}
+
+resource "aws_iam_role" "vpc_flow_logs" {
+  name = "vpc-flow-logs-role"
+  assume_role_policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [{
+      "Action" : "sts:AssumeRole",
+      "Principal" : {
+        "Service" : "vpc-flow-logs.amazonaws.com"
+      },
+      "Effect" : "Allow",
+      "Sid" : ""
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "vpc_flow_logs" {
+  role       = aws_iam_role.vpc_flow_logs.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonVPCFlowLogsRole"
 }
