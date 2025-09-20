@@ -12,6 +12,6 @@ module "aws_route53" {
   count                     = var.deploy_aws ? 1 : 0
   providers                 = { aws = aws.primary }
   domain_name               = var.domain_name
-  certificate_arn           = module.aws_acm.certificate_arn
-  domain_validation_options = module.aws_acm.domain_validation_options
+  certificate_arn           = module.aws_acm[0].certificate_arn
+  domain_validation_options = module.aws_acm[0].domain_validation_options
 }
