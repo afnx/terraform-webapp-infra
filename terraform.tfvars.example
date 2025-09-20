@@ -1,13 +1,20 @@
-# Cloud Providers
+##########################################
+#            Cloud Providers             #
+##########################################
 deploy_aws = true
+
+##########################################
+#           AWS Configuration            #
+##########################################
+# AWS Region
 aws_region = "us-west-2"
 
 # Domain Configuration
-domain_name               = "example.com"
-subject_alternative_names = ["www.example.com"]
+aws_domain_name               = "example.com"
+aws_subject_alternative_names = ["www.example.com"]
 
 # Tags
-tags = {
+aws_tags = {
   Environment = "production"
   Owner       = "your-team"
   Project     = "webapp"
