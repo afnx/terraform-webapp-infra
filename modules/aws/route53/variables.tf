@@ -12,3 +12,8 @@ variable "certificate_arn" {
   type        = string
   description = "The ARN of the ACM certificate to validate using Route53 DNS records."
 }
+
+variable "subject_alternative_names" {
+  type        = list(string)
+  description = "A list of additional domain names for the ACM certificate."
+}
