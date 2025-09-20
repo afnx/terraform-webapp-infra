@@ -1,14 +1,26 @@
-# Cloud Providers
+##########################################
+#            Cloud Providers             #
+##########################################
 deploy_aws = true
+
+##########################################
+#           AWS Configuration            #
+##########################################
+# AWS Region
 aws_region = "us-west-2"
 
-# Domain Configuration
-domain_name               = "example.com"
-subject_alternative_names = ["www.example.com"]
-
 # Tags
-tags = {
+aws_tags = {
   Environment = "production"
   Owner       = "your-team"
   Project     = "webapp"
 }
+
+# Domain Configuration
+aws_domain_name               = "example.com"
+aws_subject_alternative_names = ["www.example.com"]
+
+# VPC Configuration
+aws_vpc_cidr             = "10.0.0.0/16"
+aws_public_subnet_cidrs  = ["10.0.1.0/24"]
+aws_private_subnet_cidrs = ["10.0.101.0/24"]
