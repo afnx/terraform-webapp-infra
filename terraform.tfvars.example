@@ -3,5 +3,12 @@ deploy_aws = true
 aws_region = "us-west-2"
 
 # Domain Configuration
-domain_name = "example.com"
+domain_name               = "example.com"
 subject_alternative_names = ["www.example.com"]
+
+# Tags
+tags = {
+  Environment = "production"
+  Owner       = "your-team"
+  Project     = "webapp"
+}
