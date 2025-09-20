@@ -10,6 +10,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  permissions:
+    id-token: write
+    contents: read
   terraform:
     runs-on: ubuntu-latest
 
