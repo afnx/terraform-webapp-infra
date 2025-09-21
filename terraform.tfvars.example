@@ -18,9 +18,49 @@ aws_tags = {
 
 # Domain Configuration
 aws_domain_name               = "example.com"
-aws_subject_alternative_names = ["www.example.com"]
+aws_subject_alternative_names = ["www.example.com"] # Set this to [] if not needed
 
 # VPC Configuration
 aws_vpc_cidr             = "10.0.0.0/16"
 aws_public_subnet_cidrs  = ["10.0.1.0/24"]
 aws_private_subnet_cidrs = ["10.0.101.0/24"]
+
+# ALB Configuration
+aws_alb_name                       = "webapp-alb"
+aws_alb_security_group_name        = "webapp-alb-sg"
+aws_alb_security_group_description = "Security group for the Application Load Balancer"
+
+# Containers Configuration
+# Define all containers to be deployed
+aws_containers = {
+  frontend = {
+    image        = "my-frontend:latest" # e.g., nginx:latest or your custom image
+    cpu          = 256                  # in CPU units (e.g., 256 = 0.25 vCPU)
+    memory       = 512                  # in MB
+    port         = 80                   # Container port
+    health_check = "/health"            # Health check path
+    public       = true                 # true if the container should be publicly accessible
+    domain       = "example.com"        # Domain/subdomain for the container or empty string if not applicable
+    protocol     = "HTTPS"              # Protocol for the container (e.g., HTTP, HTTPS, TCP)
+  }
+  backend = {
+    image        = "my-backend:latest"
+    cpu          = 256
+    memory       = 512
+    port         = 8080
+    health_check = "/health"
+    public       = true
+    domain       = "api.example.com"
+    protocol     = "HTTPS"
+  }
+  db = {
+    image        = "my-db:latest"
+    cpu          = 256
+    memory       = 512
+    port         = 5432
+    health_check = ""
+    public       = false
+    domain       = ""
+    protocol     = "TCP"
+  }
+}
