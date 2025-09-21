@@ -62,10 +62,11 @@ resource "aws_security_group" "alb" {
   }
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+    # tfsec:ignore:aws-ec2-no-public-egress-sgr
+    cidr_blocks = var.aws_alb_egress_cidr_blocks
     description = "Allow all outbound traffic"
   }
 

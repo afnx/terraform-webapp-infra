@@ -78,6 +78,12 @@ variable "aws_alb_ingress_cidr_blocks_https" {
   default     = ["0.0.0.0/0"]
 }
 
+variable "aws_alb_egress_cidr_blocks" {
+  type        = list(string)
+  description = "List of CIDR blocks allowed for ALB egress"
+  default     = ["0.0.0.0/0"]
+}
+
 variable "aws_containers" {
   description = "Map of containers to deploy"
   type = map(object({
