@@ -40,20 +40,24 @@ resource "aws_security_group" "alb" {
   dynamic "ingress" {
     for_each = local.allow_http ? [1] : []
     content {
-      from_port   = 80
-      to_port     = 80
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
+      from_port = 80
+      to_port   = 80
+      protocol  = "tcp"
+      # tfsec:ignore:aws-ec2-no-public-ingress-sgr
+      cidr_blocks = var.aws_alb_ingress_cidr_blocks_http
+      description = "Allow inbound HTTP traffic to ALB"
     }
   }
 
   dynamic "ingress" {
     for_each = local.allow_https ? [1] : []
     content {
-      from_port   = 443
-      to_port     = 443
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
+      from_port = 443
+      to_port   = 443
+      protocol  = "tcp"
+      # tfsec:ignore:aws-ec2-no-public-ingress-sgr
+      cidr_blocks = var.aws_alb_ingress_cidr_blocks_https
+      description = "Allow inbound HTTPS traffic to ALB"
     }
   }
 
@@ -62,6 +66,7 @@ resource "aws_security_group" "alb" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow all outbound traffic"
   }
 
   tags = var.aws_tags
