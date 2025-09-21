@@ -41,8 +41,12 @@ resource "aws_lb_listener" "http" {
   }
 }
 
+locals {
+  enable_https = length([for c in var.containers : c if c.public && lower(c.protocol) == "https"]) > 0
+}
+
 resource "aws_lb_listener" "https" {
-  count             = length([for c in var.containers : c if c.public && lower(c.protocol) == "https"]) > 0 && var.certificate_arn != "" ? 1 : 0
+  count             = local.enable_https ? 1 : 0
   load_balancer_arn = aws_lb.main.arn
   port              = 443
   protocol          = "HTTPS"
