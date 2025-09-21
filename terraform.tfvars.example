@@ -17,10 +17,59 @@ aws_tags = {
 }
 
 # Domain Configuration
-aws_domain_name               = "example.com"
-aws_subject_alternative_names = ["www.example.com"]
+aws_domain_name               = "example.com"       # Replace with your actual domain
+aws_subject_alternative_names = ["www.example.com"] # Set this to [] if not needed. Can include subdomains.
 
 # VPC Configuration
+# Make sure these CIDR blocks do not overlap with your existing network
 aws_vpc_cidr             = "10.0.0.0/16"
 aws_public_subnet_cidrs  = ["10.0.1.0/24"]
 aws_private_subnet_cidrs = ["10.0.101.0/24"]
+
+# ALB Configuration
+# This is the entry point for all public traffic to your containers
+# Adjust security group CIDR blocks as needed for your security requirements
+aws_alb_name                       = "webapp-alb"    # Set a unique name for the ALB
+aws_alb_security_group_name        = "webapp-alb-sg" # Set a unique name for the ALB security group
+aws_alb_security_group_description = "Security group for the Application Load Balancer"
+aws_alb_ingress_cidr_blocks_http   = ["0.0.0.0/0"] # Open HTTP to the world or restrict to trusted IPs
+aws_alb_ingress_cidr_blocks_https  = ["0.0.0.0/0"] # Open HTTPS to the world or restrict to trusted IPs
+aws_alb_egress_cidr_blocks         = ["0.0.0.0/0"] # Allow all outbound traffic or restrict as needed
+
+# Containers Configuration
+# Define your containers here. Each container can have its own settings.
+# The 'public' field determines if the container is accessible via the ALB.
+# The 'domain' field is used to route traffic to specific containers based on the hostname.
+# The 'protocol' field defines the protocol used by the container (e.g., HTTP, HTTPS, TCP).
+aws_containers = {
+  frontend = {
+    image        = "my-frontend:latest" # e.g., nginx:latest or your custom image
+    cpu          = 256                  # in CPU units (e.g., 256 = 0.25 vCPU)
+    memory       = 512                  # in MB
+    port         = 80                   # Container port
+    health_check = "/health"            # Health check path
+    public       = true                 # true if the container should be publicly accessible
+    domain       = "example.com"        # Domain/subdomain for the container or empty string if not applicable
+    protocol     = "HTTPS"              # Protocol for the container (e.g., HTTP, HTTPS, TCP)
+  }
+  backend = {
+    image        = "my-backend:latest"
+    cpu          = 256
+    memory       = 512
+    port         = 8080
+    health_check = "/health"
+    public       = true
+    domain       = "api.example.com"
+    protocol     = "HTTPS"
+  }
+  db = {
+    image        = "my-db:latest"
+    cpu          = 256
+    memory       = 512
+    port         = 5432
+    health_check = ""
+    public       = false
+    domain       = ""
+    protocol     = "TCP"
+  }
+}
