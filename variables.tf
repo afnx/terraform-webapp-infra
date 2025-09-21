@@ -66,6 +66,18 @@ variable "aws_alb_security_group_description" {
   default     = "Security group for the Application Load Balancer"
 }
 
+variable "aws_alb_ingress_cidr_blocks_http" {
+  type        = list(string)
+  description = "List of CIDR blocks allowed to access ALB on HTTP (port 80)"
+  default     = ["0.0.0.0/0"]
+}
+
+variable "aws_alb_ingress_cidr_blocks_https" {
+  type        = list(string)
+  description = "List of CIDR blocks allowed to access ALB on HTTPS (port 443)"
+  default     = ["0.0.0.0/0"]
+}
+
 variable "aws_containers" {
   description = "Map of containers to deploy"
   type = map(object({

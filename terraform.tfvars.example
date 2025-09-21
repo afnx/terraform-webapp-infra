@@ -29,6 +29,8 @@ aws_private_subnet_cidrs = ["10.0.101.0/24"]
 aws_alb_name                       = "webapp-alb"
 aws_alb_security_group_name        = "webapp-alb-sg"
 aws_alb_security_group_description = "Security group for the Application Load Balancer"
+aws_alb_ingress_cidr_blocks_http   = ["0.0.0.0/0"] # Open HTTP to the world, consider restricting to trusted IPs
+aws_alb_ingress_cidr_blocks_https  = ["0.0.0.0/0"] # Open HTTPS to the world, consider restricting to trusted IPs
 
 # Containers Configuration
 # Define all containers to be deployed
