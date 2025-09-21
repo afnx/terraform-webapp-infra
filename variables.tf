@@ -91,7 +91,6 @@ variable "aws_alb_egress_cidr_blocks" {
 }
 
 variable "aws_containers" {
-  description = "Map of containers to deploy"
   type = map(object({
     image        = string
     cpu          = number
@@ -134,4 +133,5 @@ variable "aws_containers" {
       protocol     = "TCP"
     }
   }
+  description = "Map of containers to deploy"
 }

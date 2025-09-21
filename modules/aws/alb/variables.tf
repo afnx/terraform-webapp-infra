@@ -31,7 +31,6 @@ variable "alb_security_group_ids" {
 }
 
 variable "containers" {
-  description = "Map of containers to deploy"
   type = map(object({
     image        = string
     cpu          = number
@@ -42,4 +41,5 @@ variable "containers" {
     domain       = string
     protocol     = string
   }))
+  description = "Map of containers to deploy"
 }
