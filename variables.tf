@@ -27,7 +27,7 @@ variable "aws_domain_name" {
 
 variable "aws_subject_alternative_names" {
   type        = list(string)
-  description = "A list of additional domain names for the ACM certificate."
+  description = "A list of additional domain names for the ACM certificate. Domain names could be subdomains."
 }
 
 variable "aws_vpc_cidr" {
@@ -46,4 +46,68 @@ variable "aws_private_subnet_cidrs" {
   type        = list(string)
   description = "List of private subnet CIDRs"
   default     = ["10.0.101.0/24", "10.0.102.0/24"]
+}
+
+variable "aws_alb_name" {
+  type        = string
+  description = "Name of the ALB"
+  default     = "webapp-alb"
+}
+
+variable "aws_alb_security_group_name" {
+  type        = string
+  description = "Name for the ALB security group"
+  default     = "webapp-alb-sg"
+}
+
+variable "aws_alb_security_group_description" {
+  type        = string
+  description = "Description for the ALB security group"
+  default     = "Security group for the Application Load Balancer"
+}
+
+variable "aws_containers" {
+  description = "Map of containers to deploy"
+  type = map(object({
+    image        = string
+    cpu          = number
+    memory       = number
+    port         = number
+    health_check = string
+    public       = bool
+    domain       = string
+    protocol     = string
+  }))
+  default = {
+    frontend = {
+      image        = "my-frontend:latest"
+      cpu          = 256
+      memory       = 512
+      port         = 80
+      health_check = "/health"
+      public       = true
+      domain       = "example.com"
+      protocol     = "HTTPS"
+    }
+    backend = {
+      image        = "my-backend:latest"
+      cpu          = 256
+      memory       = 512
+      port         = 8080
+      health_check = "/health"
+      public       = true
+      domain       = "api.example.com"
+      protocol     = "HTTPS"
+    }
+    db = {
+      image        = "my-db:latest"
+      cpu          = 256
+      memory       = 512
+      port         = 5432
+      health_check = ""
+      public       = false
+      domain       = ""
+      protocol     = "TCP"
+    }
+  }
 }
