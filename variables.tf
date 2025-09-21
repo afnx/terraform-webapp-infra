@@ -48,6 +48,12 @@ variable "aws_private_subnet_cidrs" {
   default     = ["10.0.101.0/24", "10.0.102.0/24"]
 }
 
+variable "aws_vpc_flow_logs_role_name" {
+  type        = string
+  description = "Name of the IAM role for VPC Flow Logs"
+  default     = "VPCFlowLogsRole"
+}
+
 variable "aws_alb_name" {
   type        = string
   description = "Name of the ALB"

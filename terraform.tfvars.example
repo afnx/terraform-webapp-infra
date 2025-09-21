@@ -22,11 +22,12 @@ aws_subject_alternative_names = ["www.example.com"] # Set this to [] if not need
 
 # VPC Configuration
 # Make sure these CIDR blocks do not overlap with your existing network
-aws_vpc_cidr             = "10.0.0.0/16"
-aws_public_subnet_cidrs  = ["10.0.1.0/24"]
-aws_private_subnet_cidrs = ["10.0.101.0/24"]
+aws_vpc_cidr                = "10.0.0.0/16"
+aws_public_subnet_cidrs     = ["10.0.1.0/24"]
+aws_private_subnet_cidrs    = ["10.0.101.0/24"]
+aws_vpc_flow_logs_role_name = "VPCFlowLogsRole" # Set a unique IAM role name for VPC Flow Logs.
 
-# ALB Configuration
+# Application Load Balancer Configuration
 # This is the entry point for all public traffic to your containers
 # Adjust security group CIDR blocks as needed for your security requirements
 aws_alb_name                       = "webapp-alb"    # Set a unique name for the ALB
