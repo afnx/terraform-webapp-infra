@@ -41,6 +41,7 @@ resource "aws_lb_listener" "http" {
       status_code  = "404"
     }
   }
+  tags = var.tags
 }
 
 locals {
@@ -62,6 +63,7 @@ resource "aws_lb_listener" "https" {
       status_code  = "404"
     }
   }
+  tags = var.tags
 }
 
 resource "aws_lb_listener_rule" "http" {
@@ -77,6 +79,7 @@ resource "aws_lb_listener_rule" "http" {
       values = [each.value.domain]
     }
   }
+  tags = var.tags
 }
 
 resource "aws_lb_listener_rule" "https" {
@@ -92,4 +95,5 @@ resource "aws_lb_listener_rule" "https" {
       values = [each.value.domain]
     }
   }
+  tags = var.tags
 }

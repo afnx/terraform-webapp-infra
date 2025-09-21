@@ -79,11 +79,13 @@ resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
   name              = "/aws/vpc/${aws_vpc.main.id}/flow-logs"
   retention_in_days = 30
   kms_key_id        = aws_kms_key.vpc_flow_logs.arn
+  tags              = var.tags
 }
 
 resource "aws_kms_key" "vpc_flow_logs" {
   description         = "KMS key for VPC Flow Logs encryption"
   enable_key_rotation = true
+  tags                = var.tags
 }
 
 resource "aws_flow_log" "vpc" {
@@ -92,10 +94,11 @@ resource "aws_flow_log" "vpc" {
   traffic_type         = "ALL"
   vpc_id               = aws_vpc.main.id
   iam_role_arn         = aws_iam_role.vpc_flow_logs.arn
+  tags                 = var.tags
 }
 
 resource "aws_iam_role" "vpc_flow_logs" {
-  name = "vpc-flow-logs-role"
+  name = var.vpc_flow_logs_role_name
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [{
@@ -107,6 +110,7 @@ resource "aws_iam_role" "vpc_flow_logs" {
       "Sid" : ""
     }]
   })
+  tags = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "vpc_flow_logs" {
