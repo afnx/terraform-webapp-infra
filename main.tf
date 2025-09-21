@@ -33,6 +33,7 @@ locals {
 }
 
 resource "aws_security_group" "alb" {
+  count       = var.deploy_aws ? 1 : 0
   name        = var.aws_alb_security_group_name
   description = var.aws_alb_security_group_description
   vpc_id      = module.aws_vpc[0].vpc_id
