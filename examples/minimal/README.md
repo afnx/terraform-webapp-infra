@@ -4,7 +4,7 @@ This example shows the smallest configuration needed to deploy the webapp infras
 
 ## Usage
 
-```hcl
+```bash
 terraform init
 terraform apply
 ```

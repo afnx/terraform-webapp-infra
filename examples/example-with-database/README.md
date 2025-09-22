@@ -4,7 +4,7 @@ This example shows how to deploy a public web container with both RDS and Dynamo
 
 ## Usage
 
-```hcl
+```bash
 terraform init
 terraform plan
 terraform apply
