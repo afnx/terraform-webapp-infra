@@ -161,6 +161,7 @@ variable "aws_databases" {
     dynamodb_billing_mode   = optional(string)
   }))
   description = "Map of database configurations"
+  sensitive   = true
 }
 
 variable "aws_containers" {
