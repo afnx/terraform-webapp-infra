@@ -26,6 +26,6 @@ output "dynamodb_table_arns" {
 }
 
 output "dynamodb_table_stream_arns" {
-  value       = { for k, tbl in aws_dynamodb_table.dynamodb : k => tbl.stream_enabled ? tbl.stream_arn : null }
+  value       = { for k, tbl in aws_dynamodb_table.dynamodb : k => tbl.stream_enabled == true ? tbl.stream_arn : null }
   description = "Map of DynamoDB table stream ARNs by database key (if enabled)"
 }
