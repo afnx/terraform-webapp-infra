@@ -44,7 +44,6 @@ aws_databases = {
     rds_port                        = 5432
     rds_publicly_accessible         = false
     rds_skip_final_snapshot         = true
-    rds_ingress_allowed_cidr_blocks = ["0.0.0.0/0"]
     rds_egress_cidr_blocks          = ["0.0.0.0/0"]
   }
   mydynamodb = {
