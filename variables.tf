@@ -1,7 +1,7 @@
 variable "deploy_aws" {
   type        = bool
   description = "Whether to deploy AWS resources."
-  default     = true
+  default     = false
 }
 
 variable "aws_region" {
@@ -28,6 +28,7 @@ variable "aws_domain_name" {
 variable "aws_subject_alternative_names" {
   type        = list(string)
   description = "A list of additional domain names for the ACM certificate. Domain names could be subdomains."
+  default     = []
 }
 
 variable "aws_vpc_cidr" {
@@ -161,6 +162,7 @@ variable "aws_databases" {
     dynamodb_billing_mode   = optional(string)
   }))
   description = "Map of database configurations"
+  default     = {}
 }
 
 variable "aws_containers" {
