@@ -88,3 +88,21 @@ module "aws_alb" {
   containers             = var.aws_containers
   tags                   = var.aws_tags
 }
+
+module "aws_ecs_fargate" {
+  source                                = "./modules/aws/ecs_fargate"
+  count                                 = var.deploy_aws ? 1 : 0
+  providers                             = { aws = aws.primary }
+  vpc_id                                = module.aws_vpc[0].vpc_id
+  private_subnet_ids                    = module.aws_vpc[0].private_subnet_ids
+  alb_target_groups                     = module.aws_alb[0].alb_target_groups
+  ecs_cluster_name                      = var.aws_ecs_cluster_name
+  ecs_task_execution_role_name          = var.aws_ecs_task_execution_role_name
+  ecs_security_group_name               = var.aws_ecs_security_group_name
+  ecs_security_group_description        = var.aws_ecs_security_group_description
+  ecs_security_group_egress_cidr_blocks = var.aws_ecs_security_group_egress_cidr_blocks
+  ecs_task_definition_family_name       = var.aws_ecs_task_definition_family_name
+  ecs_service_name                      = var.aws_ecs_service_name
+  containers                            = var.aws_containers
+  tags                                  = var.aws_tags
+}

@@ -37,40 +37,65 @@ aws_alb_ingress_cidr_blocks_http   = ["0.0.0.0/0"] # Open HTTP to the world or r
 aws_alb_ingress_cidr_blocks_https  = ["0.0.0.0/0"] # Open HTTPS to the world or restrict to trusted IPs
 aws_alb_egress_cidr_blocks         = ["0.0.0.0/0"] # Allow all outbound traffic or restrict as needed
 
+# ECS Fargate Configuration
+# This project uses AWS ECS Fargate to run containers without managing servers
+aws_ecs_cluster_name                      = "webapp-cluster"       # Set a unique name for the ECS cluster
+aws_ecs_task_execution_role_name          = "ECSTaskExecutionRole" # Set a unique IAM role name for ECS task execution
+aws_ecs_security_group_name               = "webapp-ecs-sg"        # Set a unique name for the ECS security group
+aws_ecs_security_group_description        = "Security group for ECS tasks"
+aws_ecs_security_group_egress_cidr_blocks = ["0.0.0.0/0"]        # Allow all outbound traffic or restrict as needed
+aws_ecs_task_definition_family_name       = "webapp-task-family" # Set a unique family name for the ECS task definition
+aws_ecs_service_name                      = "webapp-ecs-service" # Set a unique name for the ECS service
+
 # Containers Configuration
 # Define your containers here. Each container can have its own settings.
 # The 'public' field determines if the container is accessible via the ALB.
 # The 'domain' field is used to route traffic to specific containers based on the hostname.
 # The 'protocol' field defines the protocol used by the container (e.g., HTTP, HTTPS, TCP).
 aws_containers = {
-  frontend = {
-    image        = "my-frontend:latest" # e.g., nginx:latest or your custom image
-    cpu          = 256                  # in CPU units (e.g., 256 = 0.25 vCPU)
-    memory       = 512                  # in MB
-    port         = 80                   # Container port
-    health_check = "/health"            # Health check path
-    public       = true                 # true if the container should be publicly accessible
-    domain       = "example.com"        # Domain/subdomain for the container or empty string if not applicable
-    protocol     = "HTTPS"              # Protocol for the container (e.g., HTTP, HTTPS, TCP)
+  web = {
+    image         = "nginx:latest" # Your custom image
+    cpu           = 256            # CPU units (256 = 0.25 vCPU, 512 = 0.5 vCPU, 1024 = 1 vCPU, etc.)
+    memory        = 512            # Memory in MB
+    port          = 80             # Container port to expose
+    health_check  = "/"            # Health check path (OPTIONAL)
+    public        = true           # Whether this container is public (accessible via ALB)
+    domain        = "example.com"  # Domain or subdomain for routing (e.g., "api.example.com") (OPTIONAL)
+    protocol      = "HTTPS"        # Protocol used by the container (e.g., HTTP, HTTPS, TCP)
+    desired_count = 2              # Number of desired task instances (OPTIONAL, default is 1)
+    autoscaling = {                # Autoscaling configuration (OPTIONAL)
+      min_capacity       = 2
+      max_capacity       = 5
+      target_cpu         = 70
+      scale_in_cooldown  = 60
+      scale_out_cooldown = 60
+    }
   }
-  backend = {
-    image        = "my-backend:latest"
+  api = {
+    image         = "myorg/api:latest"
+    cpu           = 512
+    memory        = 1024
+    port          = 8080
+    health_check  = "/health"
+    public        = true
+    domain        = "api.example.com"
+    protocol      = "HTTPS"
+    desired_count = 1
+    autoscaling = {
+      min_capacity       = 1
+      max_capacity       = 3
+      target_cpu         = 60
+      scale_in_cooldown  = 120
+      scale_out_cooldown = 120
+    }
+  }
+  worker = {
+    image        = "myorg/worker:latest"
     cpu          = 256
     memory       = 512
-    port         = 8080
-    health_check = "/health"
-    public       = true
-    domain       = "api.example.com"
-    protocol     = "HTTPS"
-  }
-  db = {
-    image        = "my-db:latest"
-    cpu          = 256
-    memory       = 512
-    port         = 5432
-    health_check = ""
+    port         = 9000
+    health_check = "/status"
     public       = false
-    domain       = ""
-    protocol     = "TCP"
+    protocol     = "HTTP"
   }
 }
