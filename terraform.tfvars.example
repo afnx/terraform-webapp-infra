@@ -47,6 +47,41 @@ aws_ecs_security_group_egress_cidr_blocks = ["0.0.0.0/0"]        # Allow all out
 aws_ecs_task_definition_family_name       = "webapp-task-family" # Set a unique family name for the ECS task definition
 aws_ecs_service_name                      = "webapp-ecs-service" # Set a unique name for the ECS service
 
+# Database Configuration
+# Define your databases here if needed. You can configure multiple databases with different engines.
+# Supported engines: "rds" for Amazon RDS, "dynamodb" for Amazon DynamoDB
+# By default, all RDS databases are accessible from all ECS tasks. Adjust security groups as needed.
+aws_databases = {
+  mypostgresdb = {
+    engine                          = "rds"                # "rds" or "dynamodb"
+    rds_instance_class              = "db.t3.micro"        # RDS instance class
+    rds_engine                      = "postgres"           # RDS engine (e.g., "mysql", "postgres", etc.)
+    rds_engine_version              = "13.4"               # RDS engine version
+    rds_db_name                     = "mydb"               # Initial database name
+    rds_username                    = "admin"              # Master username
+    rds_password                    = "YourSecurePassword" # Master password (use secrets management in production)
+    rds_allocated_storage           = 20                   # Storage in GB
+    rds_storage_type                = "gp2"                # Storage type (e.g., "gp2", "io1", etc.)
+    rds_multi_az                    = false                # Multi-AZ deployment
+    rds_port                        = 5432                 # Database port
+    rds_publicly_accessible         = false                # Whether the DB is publicly accessible
+    rds_skip_final_snapshot         = true                 # Skip final snapshot on deletion
+    rds_ingress_allowed_cidr_blocks = ["0.0.0.0/0"]        # CIDR blocks allowed to access RDS
+    rds_egress_cidr_blocks          = ["0.0.0.0/0"]        # CIDR blocks allowed for RDS egress
+  }
+  mydynamodb = {
+    engine                  = "dynamodb"        # "rds" or "dynamodb"
+    dynamodb_table_name     = "my-dynamo-table" # DynamoDB table name
+    dynamodb_hash_key       = "id"              # Hash key attribute name
+    dynamodb_hash_key_type  = "S"               # Hash key type ("S"=String, "N"=Number, "B"=Binary)
+    dynamodb_range_key      = "createdAt"       # Range key attribute name (optional)
+    dynamodb_range_key_type = "N"               # Range key type ("S"=String, "N"=Number, "B"=Binary) (optional)
+    dynamodb_read_capacity  = 5                 # Read capacity units (for PROVISIONED billing mode)
+    dynamodb_write_capacity = 5                 # Write capacity units (for PROVISIONED billing mode)
+    dynamodb_billing_mode   = "PROVISIONED"     # Billing mode ("PROVISIONED" or "PAY_PER_REQUEST")
+  }
+}
+
 # Containers Configuration
 # Define your containers here. Each container can have its own settings.
 # The 'public' field determines if the container is accessible via the ALB.

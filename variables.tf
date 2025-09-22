@@ -132,6 +132,37 @@ variable "aws_ecs_service_name" {
   default     = "webapp-ecs-service"
 }
 
+variable "aws_databases" {
+  type = map(object({
+    engine = string
+    # RDS params
+    rds_instance_class              = optional(string)
+    rds_engine                      = optional(string)
+    rds_engine_version              = optional(string)
+    rds_db_name                     = optional(string)
+    rds_username                    = optional(string)
+    rds_password                    = optional(string)
+    rds_allocated_storage           = optional(number)
+    rds_storage_type                = optional(string)
+    rds_multi_az                    = optional(bool)
+    rds_port                        = optional(number)
+    rds_publicly_accessible         = optional(bool)
+    rds_skip_final_snapshot         = optional(bool)
+    rds_ingress_allowed_cidr_blocks = optional(list(string))
+    rds_egress_cidr_blocks          = optional(list(string))
+    # DynamoDB params
+    dynamodb_table_name     = optional(string)
+    dynamodb_hash_key       = optional(string)
+    dynamodb_hash_key_type  = optional(string)
+    dynamodb_range_key      = optional(string)
+    dynamodb_range_key_type = optional(string)
+    dynamodb_read_capacity  = optional(number)
+    dynamodb_write_capacity = optional(number)
+    dynamodb_billing_mode   = optional(string)
+  }))
+  description = "Map of database configurations"
+}
+
 variable "aws_containers" {
   type = map(object({
     image         = string
@@ -151,52 +182,6 @@ variable "aws_containers" {
       scale_out_cooldown = number
     }))
   }))
-  default = {
-    web = {
-      image         = "nginx:latest"
-      cpu           = 256
-      memory        = 512
-      port          = 80
-      health_check  = "/"
-      public        = true
-      domain        = "example.com"
-      protocol      = "HTTPS"
-      desired_count = 2
-      autoscaling = {
-        min_capacity       = 2
-        max_capacity       = 5
-        target_cpu         = 70
-        scale_in_cooldown  = 60
-        scale_out_cooldown = 60
-      }
-    }
-    api = {
-      image         = "myorg/api:latest"
-      cpu           = 512
-      memory        = 1024
-      port          = 8080
-      health_check  = "/health"
-      public        = true
-      domain        = "api.example.com"
-      protocol      = "HTTPS"
-      desired_count = 1
-      autoscaling = {
-        min_capacity       = 1
-        max_capacity       = 3
-        target_cpu         = 60
-        scale_in_cooldown  = 120
-        scale_out_cooldown = 120
-      }
-    }
-    worker = {
-      image        = "myorg/worker:latest"
-      cpu          = 256
-      memory       = 512
-      port         = 9000
-      health_check = "/status"
-      public       = false
-      protocol     = "HTTP"
-    }
-  }
   description = "Map of containers to deploy"
+  default     = {}
 }

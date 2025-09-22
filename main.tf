@@ -89,6 +89,17 @@ module "aws_alb" {
   tags                   = var.aws_tags
 }
 
+module "aws_database" {
+  source                       = "./modules/aws/database"
+  count                        = var.deploy_aws && var.aws_databases != null && length(var.aws_databases) > 0 ? 1 : 0
+  providers                    = { aws = aws.primary }
+  databases                    = var.aws_databases
+  rds_subnet_ids               = module.aws_vpc[0].private_subnet_ids
+  ecs_tasks_security_group_ids = [module.aws_ecs_fargate[0].ecs_security_group_id]
+  vpc_id                       = module.aws_vpc[0].vpc_id
+  tags                         = var.aws_tags
+}
+
 module "aws_ecs_fargate" {
   source                                = "./modules/aws/ecs_fargate"
   count                                 = var.deploy_aws ? 1 : 0

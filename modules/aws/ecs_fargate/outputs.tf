@@ -27,3 +27,8 @@ output "ecs_autoscaling_target_arns" {
   value       = { for k, v in aws_appautoscaling_target.container : k => v.arn }
   description = "Map of ECS autoscaling target ARNs"
 }
+
+output "ecs_security_group_id" {
+  value       = aws_security_group.ecs_tasks.id
+  description = "The ID of the ECS security group"
+}
