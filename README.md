@@ -42,7 +42,7 @@ module "webapp_infra" {
     Project     = "minimal"
   }
 
-  aws_domain_name               = "example.com"
+  aws_domain_name = "example.com"
 
   aws_vpc_cidr                = "10.0.0.0/16"
   aws_public_subnet_cidrs     = ["10.0.1.0/24"]
@@ -66,15 +66,17 @@ module "webapp_infra" {
 
   aws_containers = {
     web = {
-      image         = "nginx:latest"
-      cpu           = 256
-      memory        = 512
-      port          = 80
-      public        = true
-      protocol      = "HTTP"
-      domain        = "example.com"
+      image    = "nginx:latest"
+      cpu      = 256
+      memory   = 512
+      port     = 80
+      public   = true
+      protocol = "HTTP"
+      domain   = "example.com"
     }
   }
+}
+
 ```
 
 Then run:
@@ -93,7 +95,7 @@ flowchart LR
   User ---> ALB[Application Load Balancer]
 
   subgraph AWS [AWS Cloud]
-    R53[Route53] --> ACM[ACM Certificate]
+    R53[Route53] --> ACM[Certificate Manager]
     ALB --> ACM
     subgraph VPC [VPC]
 
