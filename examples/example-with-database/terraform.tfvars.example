@@ -1,0 +1,60 @@
+aws_region      = "us-west-2"
+aws_domain_name = "example.com"
+
+aws_containers = {
+  web = {
+    image    = "nginx:latest"
+    cpu      = 256
+    memory   = 512
+    port     = 80
+    public   = true
+    protocol = "HTTP"
+  }
+}
+
+aws_databases = {
+  mypostgresdb = {
+    engine                          = "rds"
+    rds_instance_class              = "db.t3.micro"
+    rds_engine                      = "postgres"
+    rds_engine_version              = "13.4"
+    rds_db_name                     = "mydb"
+    rds_username                    = "admin"
+    rds_password                    = "YourSecurePassword"
+    rds_allocated_storage           = 20
+    rds_storage_type                = "gp2"
+    rds_multi_az                    = false
+    rds_port                        = 5432
+    rds_publicly_accessible         = false
+    rds_skip_final_snapshot         = true
+    rds_ingress_allowed_cidr_blocks = ["0.0.0.0/0"]
+    rds_egress_cidr_blocks          = ["0.0.0.0/0"]
+  }
+  mymysqldb = {
+    engine                          = "rds"
+    rds_instance_class              = "db.t3.micro"
+    rds_engine                      = "mysql"
+    rds_engine_version              = "8.0"
+    rds_db_name                     = "mydb"
+    rds_username                    = "admin"
+    rds_password                    = "YourSecurePassword"
+    rds_allocated_storage           = 20
+    rds_storage_type                = "gp2"
+    rds_multi_az                    = false
+    rds_port                        = 3306
+    rds_publicly_accessible         = false
+    rds_skip_final_snapshot         = true
+    rds_ingress_allowed_cidr_blocks = ["0.0.0.0/0"]
+  }
+  mydynamodb = {
+    engine                  = "dynamodb"
+    dynamodb_table_name     = "my-dynamo-table"
+    dynamodb_hash_key       = "id"
+    dynamodb_hash_key_type  = "S"
+    dynamodb_range_key      = "createdAt"
+    dynamodb_range_key_type = "N"
+    dynamodb_read_capacity  = 5
+    dynamodb_write_capacity = 5
+    dynamodb_billing_mode   = "PROVISIONED"
+  }
+}

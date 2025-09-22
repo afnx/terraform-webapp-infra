@@ -1,0 +1,13 @@
+aws_region     = "us-west-2"
+aws_domain_name = "example.com"
+
+aws_containers = {
+  web = {
+    image    = "nginx:latest"
+    cpu      = 256
+    memory   = 512
+    port     = 80
+    public   = true
+    protocol = "HTTP"
+  }
+}
