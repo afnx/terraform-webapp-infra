@@ -32,6 +32,7 @@ variable "databases" {
     dynamodb_billing_mode   = optional(string)
   }))
   description = "Map of database configurations"
+  sensitive   = true
 }
 
 variable "rds_subnet_ids" {
