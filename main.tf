@@ -15,16 +15,18 @@ module "aws_route53" {
   subject_alternative_names = var.aws_subject_alternative_names
   certificate_arn           = module.aws_acm[0].certificate_arn
   domain_validation_options = module.aws_acm[0].domain_validation_options
+  tags                      = var.aws_tags
 }
 
 module "aws_vpc" {
-  source               = "./modules/aws/vpc"
-  count                = var.deploy_aws ? 1 : 0
-  providers            = { aws = aws.primary }
-  vpc_cidr             = var.aws_vpc_cidr
-  public_subnet_cidrs  = var.aws_public_subnet_cidrs
-  private_subnet_cidrs = var.aws_private_subnet_cidrs
-  tags                 = var.aws_tags
+  source                  = "./modules/aws/vpc"
+  count                   = var.deploy_aws ? 1 : 0
+  providers               = { aws = aws.primary }
+  vpc_cidr                = var.aws_vpc_cidr
+  public_subnet_cidrs     = var.aws_public_subnet_cidrs
+  private_subnet_cidrs    = var.aws_private_subnet_cidrs
+  vpc_flow_logs_role_name = var.aws_vpc_flow_logs_role_name
+  tags                    = var.aws_tags
 }
 
 locals {
@@ -33,6 +35,7 @@ locals {
 }
 
 resource "aws_security_group" "alb" {
+  count       = var.deploy_aws ? 1 : 0
   name        = var.aws_alb_security_group_name
   description = var.aws_alb_security_group_description
   vpc_id      = module.aws_vpc[0].vpc_id
@@ -67,7 +70,7 @@ resource "aws_security_group" "alb" {
     protocol  = "-1"
     # tfsec:ignore:aws-ec2-no-public-egress-sgr
     cidr_blocks = var.aws_alb_egress_cidr_blocks
-    description = "Allow all outbound traffic"
+    description = "Allow outbound traffic"
   }
 
   tags = var.aws_tags
@@ -81,7 +84,25 @@ module "aws_alb" {
   vpc_id                 = module.aws_vpc[0].vpc_id
   public_subnet_ids      = module.aws_vpc[0].public_subnet_ids
   certificate_arn        = module.aws_acm[0].certificate_arn
-  alb_security_group_ids = [aws_security_group.alb.id]
+  alb_security_group_ids = [aws_security_group.alb[0].id]
   containers             = var.aws_containers
   tags                   = var.aws_tags
+}
+
+module "aws_ecs_fargate" {
+  source                                = "./modules/aws/ecs_fargate"
+  count                                 = var.deploy_aws ? 1 : 0
+  providers                             = { aws = aws.primary }
+  vpc_id                                = module.aws_vpc[0].vpc_id
+  private_subnet_ids                    = module.aws_vpc[0].private_subnet_ids
+  alb_target_groups                     = module.aws_alb[0].alb_target_groups
+  ecs_cluster_name                      = var.aws_ecs_cluster_name
+  ecs_task_execution_role_name          = var.aws_ecs_task_execution_role_name
+  ecs_security_group_name               = var.aws_ecs_security_group_name
+  ecs_security_group_description        = var.aws_ecs_security_group_description
+  ecs_security_group_egress_cidr_blocks = var.aws_ecs_security_group_egress_cidr_blocks
+  ecs_task_definition_family_name       = var.aws_ecs_task_definition_family_name
+  ecs_service_name                      = var.aws_ecs_service_name
+  containers                            = var.aws_containers
+  tags                                  = var.aws_tags
 }

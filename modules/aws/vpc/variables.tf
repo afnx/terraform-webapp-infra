@@ -17,3 +17,8 @@ variable "tags" {
   type        = map(string)
   description = "Tags to apply to resources"
 }
+
+variable "vpc_flow_logs_role_name" {
+  type        = string
+  description = "Name of the IAM role for VPC Flow Logs"
+}

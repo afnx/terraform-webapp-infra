@@ -31,15 +31,23 @@ variable "alb_security_group_ids" {
 }
 
 variable "containers" {
-  description = "Map of containers to deploy"
   type = map(object({
-    image        = string
-    cpu          = number
-    memory       = number
-    port         = number
-    health_check = string
-    public       = bool
-    domain       = string
-    protocol     = string
+    image         = string
+    cpu           = number
+    memory        = number
+    port          = number
+    health_check  = optional(string)
+    public        = bool
+    domain        = optional(string)
+    protocol      = string
+    desired_count = optional(number)
+    autoscaling = optional(object({
+      min_capacity       = number
+      max_capacity       = number
+      target_cpu         = number
+      scale_in_cooldown  = number
+      scale_out_cooldown = number
+    }))
   }))
+  description = "Map of containers to deploy"
 }

@@ -12,3 +12,12 @@ output "target_group_arns" {
   value       = { for k, v in aws_lb_target_group.container : k => v.arn }
   description = "Map of target group ARNs for each container"
 }
+
+output "alb_target_groups" {
+  value = { for k, v in aws_lb_target_group.container : k => {
+    target_group_arn = v.arn
+    container_name   = k
+    container_port   = var.containers[k].port
+  } }
+  description = "Map of target group details for each container"
+}

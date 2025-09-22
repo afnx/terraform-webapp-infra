@@ -48,6 +48,12 @@ variable "aws_private_subnet_cidrs" {
   default     = ["10.0.101.0/24", "10.0.102.0/24"]
 }
 
+variable "aws_vpc_flow_logs_role_name" {
+  type        = string
+  description = "Name of the IAM role for VPC Flow Logs"
+  default     = "VPCFlowLogsRole"
+}
+
 variable "aws_alb_name" {
   type        = string
   description = "Name of the ALB"
@@ -84,48 +90,113 @@ variable "aws_alb_egress_cidr_blocks" {
   default     = ["0.0.0.0/0"]
 }
 
+variable "aws_ecs_cluster_name" {
+  type        = string
+  description = "Name of the ECS cluster"
+  default     = "webapp-ecs-cluster"
+}
+
+variable "aws_ecs_task_execution_role_name" {
+  type        = string
+  description = "Name of the ECS task execution role"
+  default     = "ECSTaskExecutionRole"
+}
+
+variable "aws_ecs_security_group_name" {
+  type        = string
+  description = "Name for the ECS tasks security group"
+  default     = "webapp-ecs-sg"
+}
+
+variable "aws_ecs_security_group_description" {
+  type        = string
+  description = "Description for the ECS tasks security group"
+  default     = "Security group for the ECS tasks"
+}
+
+variable "aws_ecs_security_group_egress_cidr_blocks" {
+  type        = list(string)
+  description = "List of CIDR blocks for egress rules in the ECS tasks security group"
+  default     = ["0.0.0.0/0"]
+}
+
+variable "aws_ecs_task_definition_family_name" {
+  type        = string
+  description = "Family name for the ECS task definition"
+  default     = "webapp-task-family"
+}
+
+variable "aws_ecs_service_name" {
+  type        = string
+  description = "Name of the ECS service"
+  default     = "webapp-ecs-service"
+}
+
 variable "aws_containers" {
-  description = "Map of containers to deploy"
   type = map(object({
-    image        = string
-    cpu          = number
-    memory       = number
-    port         = number
-    health_check = string
-    public       = bool
-    domain       = string
-    protocol     = string
+    image         = string
+    cpu           = number
+    memory        = number
+    port          = number
+    health_check  = optional(string)
+    public        = bool
+    domain        = optional(string)
+    protocol      = string
+    desired_count = optional(number)
+    autoscaling = optional(object({
+      min_capacity       = number
+      max_capacity       = number
+      target_cpu         = number
+      scale_in_cooldown  = number
+      scale_out_cooldown = number
+    }))
   }))
   default = {
-    frontend = {
-      image        = "my-frontend:latest"
-      cpu          = 256
-      memory       = 512
-      port         = 80
-      health_check = "/health"
-      public       = true
-      domain       = "example.com"
-      protocol     = "HTTPS"
+    web = {
+      image         = "nginx:latest"
+      cpu           = 256
+      memory        = 512
+      port          = 80
+      health_check  = "/"
+      public        = true
+      domain        = "example.com"
+      protocol      = "HTTPS"
+      desired_count = 2
+      autoscaling = {
+        min_capacity       = 2
+        max_capacity       = 5
+        target_cpu         = 70
+        scale_in_cooldown  = 60
+        scale_out_cooldown = 60
+      }
     }
-    backend = {
-      image        = "my-backend:latest"
-      cpu          = 256
-      memory       = 512
-      port         = 8080
-      health_check = "/health"
-      public       = true
-      domain       = "api.example.com"
-      protocol     = "HTTPS"
+    api = {
+      image         = "myorg/api:latest"
+      cpu           = 512
+      memory        = 1024
+      port          = 8080
+      health_check  = "/health"
+      public        = true
+      domain        = "api.example.com"
+      protocol      = "HTTPS"
+      desired_count = 1
+      autoscaling = {
+        min_capacity       = 1
+        max_capacity       = 3
+        target_cpu         = 60
+        scale_in_cooldown  = 120
+        scale_out_cooldown = 120
+      }
     }
-    db = {
-      image        = "my-db:latest"
+    worker = {
+      image        = "myorg/worker:latest"
       cpu          = 256
       memory       = 512
-      port         = 5432
-      health_check = ""
+      port         = 9000
+      health_check = "/status"
       public       = false
-      domain       = ""
-      protocol     = "TCP"
+      protocol     = "HTTP"
     }
   }
+  description = "Map of containers to deploy"
 }
