@@ -10,7 +10,7 @@ This example demonstrates deploying a full-featured web application infrastructu
 
 ## Usage
 
-```hcl
+```bash
 terraform init
 terraform plan
 terraform apply
