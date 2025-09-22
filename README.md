@@ -4,11 +4,13 @@
 
 ### Scalable Cloud Infrastructure for Containerized Web Apps
 
-*Automate, scale, and secure your cloud-native applications with Terraform.*
+*Deploy scalable cloud web infra in minutes.*
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Terraform](https://img.shields.io/badge/Terraform-1.5+-623CE4?logo=terraform&logoColor=white)](https://www.terraform.io/)
-[![AWS](https://img.shields.io/badge/AWS-cloud-232F3E?logo=amazon-aws&logoColor=white)](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
+[![AWS](https://img.shields.io/badge/AWS-Cloud-D87800?logo=amazon-aws&logoColor=white)](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
+[![GCP](https://img.shields.io/badge/GCP-Cloud-4285F4?logo=google-cloud&logoColor=white)](https://registry.terraform.io/providers/hashicorp/google/latest/docs)  
+[![Azure](https://img.shields.io/badge/Azure-Cloud-0078D4?logo=microsoft-azure&logoColor=white)](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs)
 [![Docker](https://img.shields.io/badge/Docker-enabled-blue.svg)](https://docker.com/)
 
 </div>
@@ -71,7 +73,7 @@ module "webapp_infra" {
       memory   = 512
       port     = 80
       public   = true
-      protocol = "HTTP"
+      protocol = "HTTPS"
       domain   = "example.com"
     }
   }
@@ -98,22 +100,23 @@ flowchart LR
     R53[Route53] --> ACM[Certificate Manager]
     ALB --> ACM
     subgraph VPC [VPC]
-
       ALB --> ECSCluster
-
       subgraph PVS [Private Subnet]
-        subgraph ECSCluster [EC2/ECS Cluster]
-          CN1[Container] --- CN2[Container] --- CN3[Container]
+        subgraph ECSCluster [ECS Cluster]
+          subgraph ECSTask [ECS Fargate Task]
+            subgraph ECSService [ECS Service]
+              CN[Container]
+            end
+          end
         end
+      end
+      subgraph DBS [DB Subnet]
         ECSCluster --> RDS[(RDS Database)]
       end
-
     end
-
     VPC ---> DDB[(DynamoDB)]
     VPC ---> CW[CloudWatch]
   end
-
 ```
 
 ### Component Flow
