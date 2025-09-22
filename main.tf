@@ -70,7 +70,7 @@ resource "aws_security_group" "alb" {
     protocol  = "-1"
     # tfsec:ignore:aws-ec2-no-public-egress-sgr
     cidr_blocks = var.aws_alb_egress_cidr_blocks
-    description = "Allow all outbound traffic"
+    description = "Allow outbound traffic"
   }
 
   tags = var.aws_tags

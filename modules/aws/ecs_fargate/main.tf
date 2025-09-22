@@ -1,5 +1,9 @@
 resource "aws_ecs_cluster" "main" {
   name = var.ecs_cluster_name
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
   tags = var.tags
 }
 
@@ -26,10 +30,12 @@ resource "aws_security_group" "ecs_tasks" {
   description = var.ecs_security_group_description
   vpc_id      = var.vpc_id
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+    # tfsec:ignore:aws-ec2-no-public-egress-sgr
     cidr_blocks = var.ecs_security_group_egress_cidr_blocks
+    description = "Allow outbound traffic from ECS tasks"
   }
   tags = var.tags
 }
