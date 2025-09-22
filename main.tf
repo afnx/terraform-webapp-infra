@@ -84,7 +84,7 @@ module "aws_alb" {
   vpc_id                 = module.aws_vpc[0].vpc_id
   public_subnet_ids      = module.aws_vpc[0].public_subnet_ids
   certificate_arn        = module.aws_acm[0].certificate_arn
-  alb_security_group_ids = [aws_security_group.alb.id]
+  alb_security_group_ids = [aws_security_group.alb[0].id]
   containers             = var.aws_containers
   tags                   = var.aws_tags
 }
