@@ -76,8 +76,8 @@ resource "aws_dynamodb_table" "dynamodb" {
   hash_key       = each.value.dynamodb_hash_key
   range_key      = each.value.dynamodb_range_key
   billing_mode   = lookup(each.value, "dynamodb_billing_mode", "PROVISIONED")
-  read_capacity  = each.value.dynamodb_read_capacity
-  write_capacity = each.value.dynamodb_write_capacity
+  read_capacity  = each.value.dynamodb_billing_mode == "PROVISIONED" ? each.value.dynamodb_read_capacity : null
+  write_capacity = each.value.dynamodb_billing_mode == "PROVISIONED" ? each.value.dynamodb_write_capacity : null
   attribute {
     name = each.value.dynamodb_hash_key
     type = lookup(each.value, "dynamodb_hash_key_type", "S")
