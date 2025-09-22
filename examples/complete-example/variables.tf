@@ -1,142 +1,136 @@
-variable "deploy_aws" {
-  type        = bool
-  description = "Whether to deploy AWS resources."
-  default     = false
-}
-
 variable "aws_region" {
-  description = "Region to deploy AWS resources."
   type        = string
   default     = "us-west-2"
+  description = "AWS region"
 }
 
 variable "aws_tags" {
-  description = "Tags to apply to resources."
-  type        = map(string)
+  type = map(string)
   default = {
     Environment = "production"
     Owner       = "your-team"
     Project     = "webapp"
   }
+  description = "Tags for AWS resources"
 }
 
 variable "aws_domain_name" {
   type        = string
-  description = "The primary domain name for the ACM certificate."
+  default     = "example.com"
+  description = "Primary domain name"
 }
 
 variable "aws_subject_alternative_names" {
   type        = list(string)
-  description = "A list of additional domain names for the ACM certificate. Domain names could be subdomains."
-  default     = []
+  default     = ["www.example.com"]
+  description = "Additional domain names"
 }
 
 variable "aws_vpc_cidr" {
   type        = string
-  description = "CIDR block for the VPC"
   default     = "10.0.0.0/16"
+  description = "VPC CIDR block"
 }
 
 variable "aws_public_subnet_cidrs" {
   type        = list(string)
-  description = "List of public subnet CIDRs"
   default     = ["10.0.1.0/24", "10.0.2.0/24"]
+  description = "Public subnet CIDRs"
 }
 
 variable "aws_private_subnet_cidrs" {
   type        = list(string)
-  description = "List of private subnet CIDRs"
   default     = ["10.0.101.0/24", "10.0.102.0/24"]
+  description = "Private subnet CIDRs"
 }
 
 variable "aws_vpc_flow_logs_role_name" {
   type        = string
-  description = "Name of the IAM role for VPC Flow Logs"
   default     = "VPCFlowLogsRole"
+  description = "IAM role for VPC Flow Logs"
 }
 
 variable "aws_alb_name" {
   type        = string
-  description = "Name of the ALB"
   default     = "webapp-alb"
+  description = "ALB name"
 }
 
 variable "aws_alb_security_group_name" {
   type        = string
-  description = "Name for the ALB security group"
   default     = "webapp-alb-sg"
+  description = "ALB security group name"
 }
 
 variable "aws_alb_security_group_description" {
   type        = string
-  description = "Description for the ALB security group"
   default     = "Security group for the Application Load Balancer"
+  description = "ALB security group description"
 }
 
 variable "aws_alb_ingress_cidr_blocks_http" {
   type        = list(string)
-  description = "List of CIDR blocks allowed to access ALB on HTTP (port 80)"
   default     = ["0.0.0.0/0"]
+  description = "ALB HTTP ingress CIDRs"
 }
 
 variable "aws_alb_ingress_cidr_blocks_https" {
   type        = list(string)
-  description = "List of CIDR blocks allowed to access ALB on HTTPS (port 443)"
   default     = ["0.0.0.0/0"]
+  description = "ALB HTTPS ingress CIDRs"
 }
 
 variable "aws_alb_egress_cidr_blocks" {
   type        = list(string)
-  description = "List of CIDR blocks allowed for ALB egress"
   default     = ["0.0.0.0/0"]
+  description = "ALB egress CIDRs"
 }
 
 variable "aws_ecs_cluster_name" {
   type        = string
-  description = "Name of the ECS cluster"
   default     = "webapp-ecs-cluster"
+  description = "ECS cluster name"
 }
 
 variable "aws_ecs_task_execution_role_name" {
   type        = string
-  description = "Name of the ECS task execution role"
   default     = "ECSTaskExecutionRole"
+  description = "ECS task execution role name"
 }
 
 variable "aws_ecs_security_group_name" {
   type        = string
-  description = "Name for the ECS tasks security group"
   default     = "webapp-ecs-sg"
+  description = "ECS security group name"
 }
 
 variable "aws_ecs_security_group_description" {
   type        = string
-  description = "Description for the ECS tasks security group"
   default     = "Security group for the ECS tasks"
+  description = "ECS security group description"
 }
 
 variable "aws_ecs_security_group_egress_cidr_blocks" {
   type        = list(string)
-  description = "List of CIDR blocks for egress rules in the ECS tasks security group"
   default     = ["0.0.0.0/0"]
+  description = "ECS security group egress CIDRs"
 }
 
 variable "aws_ecs_task_definition_family_name" {
   type        = string
-  description = "Family name for the ECS task definition"
   default     = "webapp-task-family"
+  description = "ECS task definition family name"
 }
 
 variable "aws_ecs_service_name" {
   type        = string
-  description = "Name of the ECS service"
   default     = "webapp-ecs-service"
+  description = "ECS service name"
 }
 
 variable "aws_databases" {
   type = map(object({
-    engine = string
-    # RDS params
+    engine                          = string
     rds_instance_class              = optional(string)
     rds_engine                      = optional(string)
     rds_engine_version              = optional(string)
@@ -151,18 +145,16 @@ variable "aws_databases" {
     rds_skip_final_snapshot         = optional(bool)
     rds_ingress_allowed_cidr_blocks = optional(list(string))
     rds_egress_cidr_blocks          = optional(list(string))
-    # DynamoDB params
-    dynamodb_table_name     = optional(string)
-    dynamodb_hash_key       = optional(string)
-    dynamodb_hash_key_type  = optional(string)
-    dynamodb_range_key      = optional(string)
-    dynamodb_range_key_type = optional(string)
-    dynamodb_read_capacity  = optional(number)
-    dynamodb_write_capacity = optional(number)
-    dynamodb_billing_mode   = optional(string)
+    dynamodb_table_name             = optional(string)
+    dynamodb_hash_key               = optional(string)
+    dynamodb_hash_key_type          = optional(string)
+    dynamodb_range_key              = optional(string)
+    dynamodb_range_key_type         = optional(string)
+    dynamodb_read_capacity          = optional(number)
+    dynamodb_write_capacity         = optional(number)
+    dynamodb_billing_mode           = optional(string)
   }))
-  description = "Map of database configurations"
-  default     = {}
+  description = "Database configurations"
 }
 
 variable "aws_containers" {
@@ -184,6 +176,5 @@ variable "aws_containers" {
       scale_out_cooldown = number
     }))
   }))
-  description = "Map of containers to deploy"
-  default     = {}
+  description = "Container configurations"
 }

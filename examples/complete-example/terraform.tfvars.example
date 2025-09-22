@@ -1,0 +1,108 @@
+aws_region = "us-west-2"
+
+aws_tags = {
+  Environment = "production"
+  Owner       = "your-team"
+  Project     = "webapp"
+}
+
+aws_domain_name               = "example.com"
+aws_subject_alternative_names = ["www.example.com"]
+
+aws_vpc_cidr                = "10.0.0.0/16"
+aws_public_subnet_cidrs     = ["10.0.1.0/24", "10.0.2.0/24"]
+aws_private_subnet_cidrs    = ["10.0.101.0/24", "10.0.102.0/24"]
+aws_vpc_flow_logs_role_name = "VPCFlowLogsRole"
+
+aws_alb_name                       = "webapp-alb"
+aws_alb_security_group_name        = "webapp-alb-sg"
+aws_alb_security_group_description = "Security group for the Application Load Balancer"
+aws_alb_ingress_cidr_blocks_http   = ["0.0.0.0/0"]
+aws_alb_ingress_cidr_blocks_https  = ["0.0.0.0/0"]
+aws_alb_egress_cidr_blocks         = ["0.0.0.0/0"]
+
+aws_ecs_cluster_name                      = "webapp-ecs-cluster"
+aws_ecs_task_execution_role_name          = "ECSTaskExecutionRole"
+aws_ecs_security_group_name               = "webapp-ecs-sg"
+aws_ecs_security_group_description        = "Security group for the ECS tasks"
+aws_ecs_security_group_egress_cidr_blocks = ["0.0.0.0/0"]
+aws_ecs_task_definition_family_name       = "webapp-task-family"
+aws_ecs_service_name                      = "webapp-ecs-service"
+
+aws_databases = {
+  mypostgresdb = {
+    engine                          = "rds"
+    rds_instance_class              = "db.t3.micro"
+    rds_engine                      = "postgres"
+    rds_engine_version              = "13.4"
+    rds_db_name                     = "mydb"
+    rds_username                    = "admin"
+    rds_password                    = "YourSecurePassword"
+    rds_allocated_storage           = 20
+    rds_storage_type                = "gp2"
+    rds_multi_az                    = false
+    rds_port                        = 5432
+    rds_publicly_accessible         = false
+    rds_skip_final_snapshot         = true
+    rds_egress_cidr_blocks          = ["0.0.0.0/0"]
+  }
+  mydynamodb = {
+    engine                  = "dynamodb"
+    dynamodb_table_name     = "my-dynamo-table"
+    dynamodb_hash_key       = "id"
+    dynamodb_hash_key_type  = "S"
+    dynamodb_range_key      = "createdAt"
+    dynamodb_range_key_type = "N"
+    dynamodb_read_capacity  = 5
+    dynamodb_write_capacity = 5
+    dynamodb_billing_mode   = "PROVISIONED"
+  }
+}
+
+aws_containers = {
+  web = {
+    image         = "nginx:latest"
+    cpu           = 256
+    memory        = 512
+    port          = 80
+    health_check  = "/"
+    public        = true
+    domain        = "example.com"
+    protocol      = "HTTPS"
+    desired_count = 2
+    autoscaling = {
+      min_capacity       = 2
+      max_capacity       = 5
+      target_cpu         = 70
+      scale_in_cooldown  = 60
+      scale_out_cooldown = 60
+    }
+  }
+  api = {
+    image         = "myorg/api:latest"
+    cpu           = 512
+    memory        = 1024
+    port          = 8080
+    health_check  = "/health"
+    public        = true
+    domain        = "api.example.com"
+    protocol      = "HTTPS"
+    desired_count = 1
+    autoscaling = {
+      min_capacity       = 1
+      max_capacity       = 3
+      target_cpu         = 60
+      scale_in_cooldown  = 120
+      scale_out_cooldown = 120
+    }
+  }
+  worker = {
+    image        = "myorg/worker:latest"
+    cpu          = 256
+    memory       = 512
+    port         = 9000
+    health_check = "/status"
+    public       = false
+    protocol     = "HTTP"
+  }
+}
