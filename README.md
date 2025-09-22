@@ -119,7 +119,7 @@ flowchart LR
 ### Component Flow
 
 - **VPC**: Isolated network environment containing public, private, and DB subnets.
-- **Route53**:Routes user requests to the Application Load Balancer using a custom domain name.
+- **Route53**: Routes user requests to the Application Load Balancer using a custom domain name.
 - **ACM (AWS Certificate Manager)**: Issues SSL certificates for secure HTTPS via the load balancer.
 - **ALB (Application Load Balancer)**: Manages incoming HTTP/HTTPS traffic and distributes requests to containers.
 - **ECS (Elastic Container Service)**: Runs your containerized web app. Pulls images from ECR or Docker Hub.
