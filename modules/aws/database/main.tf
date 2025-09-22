@@ -1,5 +1,5 @@
 resource "aws_security_group" "rds" {
-  for_each    = { for k, db in var.databases : k => db if db.engine == "rds" }
+  for_each    = { for k, db in nonsensitive(var.databases) : k => db if db.engine == "rds" }
   name        = "${each.key}-rds-sg"
   description = "Security group for RDS instance ${each.key}"
   vpc_id      = var.vpc_id
@@ -44,7 +44,7 @@ resource "aws_security_group" "rds" {
 
 
 resource "aws_db_subnet_group" "rds" {
-  for_each   = { for k, db in var.databases : k => db if db.engine == "rds" }
+  for_each   = { for k, db in nonsensitive(var.databases) : k => db if db.engine == "rds" }
   name       = "${each.key}-subnet-group"
   subnet_ids = var.rds_subnet_ids
   tags       = var.tags
@@ -71,7 +71,7 @@ resource "aws_db_instance" "rds" {
 }
 
 resource "aws_dynamodb_table" "dynamodb" {
-  for_each       = { for k, db in var.databases : k => db if db.engine == "dynamodb" }
+  for_each       = { for k, db in nonsensitive(var.databases) : k => db if db.engine == "dynamodb" }
   name           = each.value.dynamodb_table_name
   hash_key       = each.value.dynamodb_hash_key
   range_key      = each.value.dynamodb_range_key
