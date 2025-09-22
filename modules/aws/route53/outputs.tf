@@ -10,5 +10,5 @@ output "zone_id" {
 
 output "record_names" {
   description = "Map of Route53 record names"
-  value       = { for record in aws_route53_record.cert_validation : record.name => record.name }
+  value       = { for record in aws_route53_record.cert_validation : record.name => record.type }
 }
