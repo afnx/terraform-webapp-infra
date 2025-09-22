@@ -9,8 +9,12 @@ variable "private_subnet_ids" {
 }
 
 variable "alb_target_groups" {
-  type        = list(string)
-  description = "List of ALB target group ARNs to attach to the ECS service"
+  type = map(object({
+    target_group_arn = string
+    container_name   = string
+    container_port   = number
+  }))
+  description = "Map of ALB target group info for each container"
 }
 
 variable "tags" {
