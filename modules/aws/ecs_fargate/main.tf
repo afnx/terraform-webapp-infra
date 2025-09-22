@@ -87,7 +87,7 @@ resource "aws_ecs_service" "container" {
 }
 
 resource "aws_appautoscaling_target" "container" {
-  for_each           = { for k, v in var.containers : k => v if can(v.autoscaling) }
+  for_each           = { for k, v in var.containers : k => v if v.autoscaling != null }
   max_capacity       = each.value.autoscaling.max_capacity
   min_capacity       = each.value.autoscaling.min_capacity
   resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.container[each.key].name}"
@@ -97,7 +97,7 @@ resource "aws_appautoscaling_target" "container" {
 }
 
 resource "aws_appautoscaling_policy" "container_cpu" {
-  for_each           = { for k, v in var.containers : k => v if can(v.autoscaling) }
+  for_each           = { for k, v in var.containers : k => v if v.autoscaling != null }
   name               = "${each.key}-cpu-scaling"
   policy_type        = "TargetTrackingScaling"
   resource_id        = aws_appautoscaling_target.container[each.key].resource_id
