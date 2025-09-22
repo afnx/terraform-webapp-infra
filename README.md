@@ -123,7 +123,7 @@ flowchart LR
 - **ALB (Application Load Balancer)**: Manages incoming HTTP/HTTPS traffic and distributes requests to containers.
 - **ECS (Elastic Container Service)**: Runs your containerized web app. Pulls images from ECR or Docker Hub.
 - **RDS (Relational Database Service)**: Managed database instance (e.g., PostgreSQL, MySQL) in its own secure subnet.
-- **DynamoDB**: Optional storage for static assets or backups.
+- **DynamoDB**: Managed NoSQL database for fast key-value or document storage.
 - **CloudWatch Logs**: Centralized logging for audit and troubleshooting.
 - **User**: Requests flow through ALB, then to ECS containers.
 
