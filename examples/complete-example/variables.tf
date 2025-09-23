@@ -44,6 +44,12 @@ variable "aws_private_subnet_cidrs" {
   description = "Private subnet CIDRs"
 }
 
+variable "aws_subnet_availability_zones" {
+  type        = list(string)
+  default     = ["us-west-2a", "us-west-2b"]
+  description = "List of availability zones to use for subnets"
+}
+
 variable "aws_vpc_flow_logs_role_name" {
   type        = string
   default     = "VPCFlowLogsRole"
