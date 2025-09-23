@@ -151,6 +151,12 @@ variable "aws_service_connect_namespace_description" {
   default     = "Namespace for the webapp service connect"
 }
 
+variable "aws_cloudwatch_log_group_name" {
+  type        = string
+  description = "Name of the CloudWatch log group for ECS tasks"
+  default     = "webapp-ecs-log-group"
+}
+
 variable "aws_databases" {
   type = map(object({
     engine = string
@@ -185,17 +191,22 @@ variable "aws_databases" {
 
 variable "aws_containers" {
   type = map(object({
-    image         = string
-    cpu           = number
-    memory        = number
-    port          = number
-    health_check  = optional(string)
-    public        = bool
-    domain        = optional(string)
-    protocol      = string
-    port_name     = optional(string)
-    desired_count = optional(number)
-    environment   = optional(map(string))
+    image                     = string
+    cpu                       = number
+    memory                    = number
+    port                      = number
+    health_check              = optional(string)
+    health_check_interval     = optional(number)
+    health_check_timeout      = optional(number)
+    health_check_retries      = optional(number)
+    health_check_start_period = optional(number)
+    public                    = bool
+    domain                    = optional(string)
+    protocol                  = string
+    port_name                 = optional(string)
+    desired_count             = optional(number)
+    environment               = optional(map(string))
+    enable_logs               = optional(bool, true)
     secrets = optional(list(object({
       name      = string
       valueFrom = string

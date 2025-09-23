@@ -114,6 +114,7 @@ module "aws_ecs_fargate" {
   source                                = "./modules/aws/ecs_fargate"
   count                                 = var.deploy_aws ? 1 : 0
   providers                             = { aws = aws.primary }
+  region                                = var.aws_region
   vpc_id                                = module.aws_vpc[0].vpc_id
   private_subnet_ids                    = module.aws_vpc[0].private_subnet_ids
   alb_target_groups                     = module.aws_alb[0].alb_target_groups
@@ -126,6 +127,7 @@ module "aws_ecs_fargate" {
   ecs_service_name                      = var.aws_ecs_service_name
   service_connect_namespace             = aws_service_discovery_private_dns_namespace.service_connect[0].arn
   containers                            = var.aws_containers
+  log_group_name                        = var.aws_cloudwatch_log_group_name
   tags                                  = var.aws_tags
   depends_on = [
     aws_service_discovery_private_dns_namespace.service_connect
