@@ -21,6 +21,11 @@ variable "aws_containers" {
     domain        = optional(string)
     protocol      = string
     desired_count = optional(number)
+    environment   = optional(map(string))
+    secrets = optional(list(object({
+      name      = string
+      valueFrom = string
+    })))
     autoscaling = optional(object({
       min_capacity       = number
       max_capacity       = number

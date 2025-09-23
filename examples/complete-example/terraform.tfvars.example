@@ -37,7 +37,7 @@ aws_databases = {
     rds_engine_version              = "13.4"
     rds_db_name                     = "mydb"
     rds_username                    = "admin"
-    rds_password                    = "YourSecurePassword"
+    rds_password_arn                = "arn:aws:secretsmanager:us-west-2:123456789012:secret:mypostgresdb_pass"
     rds_allocated_storage           = 20
     rds_storage_type                = "gp2"
     rds_multi_az                    = false
@@ -70,6 +70,17 @@ aws_containers = {
     domain        = "example.com"
     protocol      = "HTTPS"
     desired_count = 2
+    environment = {
+      ENVIRONMENT   = "production"
+      LOG_LEVEL     = "info"
+      API_URL       = "https://api.example.com"
+      PORT          = "80"
+      MY_CUSTOM_VAR = "custom_value"
+    }
+    secrets = {
+      DB_PASSWORD = "arn:aws:secretsmanager:us-west-2:123456789012:secret:db_password"
+      API_KEY     = "arn:aws:ssm:us-west-2:123456789012:parameter/api_key"
+    }
     autoscaling = {
       min_capacity       = 2
       max_capacity       = 5
