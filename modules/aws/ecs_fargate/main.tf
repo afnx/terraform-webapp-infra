@@ -38,7 +38,7 @@ locals {
 }
 
 resource "aws_iam_role_policy" "ecs_task_secrets_access" {
-  count = length(local.ssm_arns) || length(local.secretsmanager_arns) > 0 ? 1 : 0
+  count = (length(local.ssm_arns) > 0 || length(local.secretsmanager_arns) > 0) ? 1 : 0
 
   name = "${var.ecs_task_execution_role_name}SecretsAccess"
   role = aws_iam_role.ecs_task_execution.id
