@@ -51,23 +51,24 @@ aws_ecs_service_name                      = "webapp-ecs-service" # Set a unique 
 # Define your databases here if needed. You can configure multiple databases with different engines.
 # Supported engines: "rds" for Amazon RDS, "dynamodb" for Amazon DynamoDB
 # By default, all RDS databases are accessible from all ECS tasks. Adjust security groups as needed.
+# Ensure that the secrets or parameters for database passwords are created in AWS Secrets Manager or Parameter Store.
 aws_databases = {
   mypostgresdb = {
-    engine                          = "rds"                # "rds" or "dynamodb"
-    rds_instance_class              = "db.t3.micro"        # RDS instance class
-    rds_engine                      = "postgres"           # RDS engine (e.g., "mysql", "postgres", etc.)
-    rds_engine_version              = "13.4"               # RDS engine version
-    rds_db_name                     = "mydb"               # Initial database name
-    rds_username                    = "admin"              # Master username
-    rds_password                    = "YourSecurePassword" # Master password (use secrets management in production)
-    rds_allocated_storage           = 20                   # Storage in GB
-    rds_storage_type                = "gp2"                # Storage type (e.g., "gp2", "io1", etc.)
-    rds_multi_az                    = false                # Multi-AZ deployment
-    rds_port                        = 5432                 # Database port
-    rds_publicly_accessible         = false                # Whether the DB is publicly accessible
-    rds_skip_final_snapshot         = true                 # Skip final snapshot on deletion
-    rds_ingress_allowed_cidr_blocks = ["0.0.0.0/0"]        # CIDR blocks allowed to access RDS
-    rds_egress_cidr_blocks          = ["0.0.0.0/0"]        # CIDR blocks allowed for RDS egress
+    engine                          = "rds"                                                                    # "rds" or "dynamodb"
+    rds_instance_class              = "db.t3.micro"                                                            # RDS instance class
+    rds_engine                      = "postgres"                                                               # RDS engine (e.g., "mysql", "postgres", etc.)
+    rds_engine_version              = "13.4"                                                                   # RDS engine version
+    rds_db_name                     = "mydb"                                                                   # Initial database name
+    rds_username                    = "admin"                                                                  # Master username
+    rds_password_arn                = "arn:aws:secretsmanager:us-west-2:123456789012:secret:mypostgresdb_pass" # ARN of the Secrets Manager secret or Parameter Store ARN containing the password
+    rds_allocated_storage           = 20                                                                       # Storage in GB
+    rds_storage_type                = "gp2"                                                                    # Storage type (e.g., "gp2", "io1", etc.)
+    rds_multi_az                    = false                                                                    # Multi-AZ deployment
+    rds_port                        = 5432                                                                     # Database port
+    rds_publicly_accessible         = false                                                                    # Whether the DB is publicly accessible
+    rds_skip_final_snapshot         = true                                                                     # Skip final snapshot on deletion
+    rds_ingress_allowed_cidr_blocks = ["0.0.0.0/0"]                                                            # CIDR blocks allowed to access RDS
+    rds_egress_cidr_blocks          = ["0.0.0.0/0"]                                                            # CIDR blocks allowed for RDS egress
   }
   mydynamodb = {
     engine                  = "dynamodb"        # "rds" or "dynamodb"
@@ -87,6 +88,9 @@ aws_databases = {
 # The 'public' field determines if the container is accessible via the ALB.
 # The 'domain' field is used to route traffic to specific containers based on the hostname.
 # The 'protocol' field defines the protocol used by the container (e.g., HTTP, HTTPS, TCP).
+# Environment variables and secrets can be specified for each container.
+# Secrets must be stored in AWS Secrets Manager or Parameter Store.
+# Autoscaling can be configured per container. If not specified, autoscaling is disabled.
 aws_containers = {
   web = {
     image         = "nginx:latest" # Your custom image
@@ -98,7 +102,18 @@ aws_containers = {
     domain        = "example.com"  # Domain or subdomain for routing (e.g., "api.example.com") (OPTIONAL)
     protocol      = "HTTPS"        # Protocol used by the container (e.g., HTTP, HTTPS, TCP)
     desired_count = 2              # Number of desired task instances (OPTIONAL, default is 1)
-    autoscaling = {                # Autoscaling configuration (OPTIONAL)
+    environment = {                # Environment variables (OPTIONAL)
+      ENVIRONMENT   = "production"
+      LOG_LEVEL     = "info"
+      API_URL       = "https://api.example.com"
+      PORT          = "80"
+      MY_CUSTOM_VAR = "custom_value"
+    }
+    secrets = {                                                                        # Secrets from AWS Secrets Manager or Parameter Store (OPTIONAL)
+      DB_PASSWORD = "arn:aws:secretsmanager:us-west-2:123456789012:secret:db_password" # ARN of the secret or parameter
+      API_KEY     = "arn:aws:ssm:us-west-2:123456789012:parameter/api_key"             # ARN of the secret or parameter
+    }
+    autoscaling = { # Autoscaling configuration (OPTIONAL)
       min_capacity       = 2
       max_capacity       = 5
       target_cpu         = 70

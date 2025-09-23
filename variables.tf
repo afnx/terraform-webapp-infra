@@ -142,7 +142,7 @@ variable "aws_databases" {
     rds_engine_version              = optional(string)
     rds_db_name                     = optional(string)
     rds_username                    = optional(string)
-    rds_password                    = optional(string)
+    rds_password_arn                = optional(string)
     rds_allocated_storage           = optional(number)
     rds_storage_type                = optional(string)
     rds_multi_az                    = optional(bool)
@@ -176,6 +176,11 @@ variable "aws_containers" {
     domain        = optional(string)
     protocol      = string
     desired_count = optional(number)
+    environment   = optional(map(string))
+    secrets = optional(list(object({
+      name      = string
+      valueFrom = string
+    })))
     autoscaling = optional(object({
       min_capacity       = number
       max_capacity       = number
