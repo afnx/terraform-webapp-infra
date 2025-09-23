@@ -107,7 +107,10 @@ resource "aws_ecs_task_definition" "container" {
       name          = lookup(each.value, "port_name", "http")
     }]
     healthCheck = lookup(each.value, "health_check", "") != "" ? {
-      command     = ["CMD-SHELL", "curl -f http://localhost:${each.value.port}${lookup(each.value, "health_check", "")} || exit 1"]
+      command = [
+        "CMD-SHELL",
+        "curl -f http://localhost:${each.value.port}${lookup(each.value, "health_check", "") != null ? lookup(each.value, "health_check", "") : ""} || exit 1"
+      ]
       interval    = 30
       timeout     = 5
       retries     = 3
