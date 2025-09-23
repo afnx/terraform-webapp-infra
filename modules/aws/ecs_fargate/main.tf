@@ -136,7 +136,7 @@ resource "aws_ecs_task_definition" "container" {
     } : null
   }])
   depends_on = [aws_cloudwatch_log_group.ecs]
-  tags = var.tags
+  tags       = var.tags
 }
 
 resource "aws_ecs_service" "container" {
