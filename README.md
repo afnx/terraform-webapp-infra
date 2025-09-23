@@ -81,10 +81,16 @@ module "webapp_infra" {
         PORT          = "80"
         MY_CUSTOM_VAR = "custom_value"
       }
-      secrets = {
-        DB_PASSWORD = "arn:aws:secretsmanager:us-west-2:123456789012:secret:db_password"
-        API_KEY     = "arn:aws:ssm:us-west-2:123456789012:parameter/api_key"
-      }
+      secrets = [
+        {
+          name      = "DB_PASSWORD"
+          valueFrom = "arn:aws:secretsmanager:us-west-2:123456789012:secret:db_password"
+        },
+        {
+          name      = "API_KEY"
+          valueFrom = "arn:aws:ssm:us-west-2:123456789012:parameter/api_key"
+        }
+      ]
       autoscaling = {
         min_capacity       = 2
         max_capacity       = 5
