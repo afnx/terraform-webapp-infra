@@ -124,7 +124,7 @@ module "aws_ecs_fargate" {
   ecs_security_group_egress_cidr_blocks = var.aws_ecs_security_group_egress_cidr_blocks
   ecs_task_definition_family_name       = var.aws_ecs_task_definition_family_name
   ecs_service_name                      = var.aws_ecs_service_name
-  service_connect_namespace             = aws_service_discovery_private_dns_namespace.service_connect[0].id
+  service_connect_namespace             = aws_service_discovery_private_dns_namespace.service_connect[0].arn
   containers                            = var.aws_containers
   tags                                  = var.aws_tags
   depends_on = [
