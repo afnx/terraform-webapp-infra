@@ -38,15 +38,15 @@ locals {
 }
 
 resource "aws_iam_role_policy" "ecs_task_secrets_access" {
-  count = length(local.secrets_arns) > 0 ? 1 : 0
+  count = (length(local.ssm_arns) > 0 || length(local.secretsmanager_arns) > 0) ? 1 : 0
 
   name = "${var.ecs_task_execution_role_name}SecretsAccess"
   role = aws_iam_role.ecs_task_execution.id
 
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
-      {
+    Statement = concat(
+      length(local.ssm_arns) > 0 ? [{
         Effect = "Allow"
         Action = [
           "ssm:GetParameters",
@@ -54,15 +54,15 @@ resource "aws_iam_role_policy" "ecs_task_secrets_access" {
           "ssm:GetParametersByPath"
         ]
         Resource = local.ssm_arns
-      },
-      {
+      }] : [],
+      length(local.secretsmanager_arns) > 0 ? [{
         Effect = "Allow"
         Action = [
           "secretsmanager:GetSecretValue"
         ]
         Resource = local.secretsmanager_arns
-      }
-    ]
+      }] : []
+    )
   })
 }
 

@@ -33,7 +33,7 @@ You can use this module to quickly provision infrastructure for your containeriz
 
 ```hcl
 module "webapp_infra" {
-  source = "git::https://github.com/afnx/terraform-webapp-infra.git//?ref=v0.0.4"
+  source = "git::https://github.com/afnx/terraform-webapp-infra.git//?ref=v0.0.5"
 
   deploy_aws = true
 
@@ -46,10 +46,11 @@ module "webapp_infra" {
 
   aws_domain_name = "example.com"
 
-  aws_vpc_cidr                = "10.0.0.0/16"
-  aws_public_subnet_cidrs     = ["10.0.1.0/24"]
-  aws_private_subnet_cidrs    = ["10.0.101.0/24"]
-  aws_vpc_flow_logs_role_name = "VPCFlowLogsRole"
+  aws_vpc_cidr                  = "10.0.0.0/16"
+  aws_public_subnet_cidrs       = ["10.0.1.0/24", "10.0.2.0/24"]
+  aws_private_subnet_cidrs      = ["10.0.101.0/24"]
+  aws_subnet_availability_zones = ["us-west-2a", "us-west-2b"]
+  aws_vpc_flow_logs_role_name   = "VPCFlowLogsRole"
 
   aws_alb_name                       = "myapp-alb"
   aws_alb_security_group_name        = "myapp-alb-sg"

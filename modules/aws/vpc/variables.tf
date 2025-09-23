@@ -1,3 +1,9 @@
+variable "region" {
+  type        = string
+  description = "AWS region to deploy resources in"
+
+}
+
 variable "vpc_cidr" {
   type        = string
   description = "CIDR block for the VPC"
@@ -11,6 +17,11 @@ variable "public_subnet_cidrs" {
 variable "private_subnet_cidrs" {
   type        = list(string)
   description = "List of private subnet CIDRs"
+}
+
+variable "availability_zones" {
+  type        = list(string)
+  description = "List of availability zones to use for subnets"
 }
 
 variable "tags" {
