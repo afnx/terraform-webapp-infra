@@ -9,25 +9,6 @@ resource "aws_lb" "main" {
   tags                       = var.tags
 }
 
-resource "aws_lb_target_group" "container" {
-  for_each    = { for k, v in var.containers : k => v if v.public }
-  name        = "${each.key}-tg"
-  port        = each.value.port
-  protocol    = upper(each.value.protocol)
-  vpc_id      = var.vpc_id
-  target_type = "ip"
-  health_check {
-    path                = (upper(each.value.protocol) == "HTTP" || upper(each.value.protocol) == "HTTPS") ? lookup(each.value, "health_check", "") : null
-    protocol            = upper(each.value.protocol)
-    matcher             = "200-399"
-    interval            = 30
-    timeout             = 5
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-  }
-  tags = var.tags
-}
-
 resource "aws_lb_listener" "http" {
   count             = length([for c in var.containers : c if c.public && lower(c.protocol) == "http"]) > 0 ? 1 : 0
   load_balancer_arn = aws_lb.main.arn
@@ -41,8 +22,7 @@ resource "aws_lb_listener" "http" {
       status_code  = "404"
     }
   }
-  depends_on = [aws_lb_target_group.container]
-  tags       = var.tags
+  tags = var.tags
 }
 
 locals {
@@ -64,8 +44,7 @@ resource "aws_lb_listener" "https" {
       status_code  = "404"
     }
   }
-  depends_on = [aws_lb_target_group.container]
-  tags       = var.tags
+  tags = var.tags
 }
 
 resource "aws_lb_listener_rule" "http" {
@@ -96,6 +75,28 @@ resource "aws_lb_listener_rule" "https" {
     host_header {
       values = lookup(each.value, "domain", null) != null ? [each.value.domain] : ["*"]
     }
+  }
+  tags = var.tags
+}
+
+resource "aws_lb_target_group" "container" {
+  for_each    = { for k, v in var.containers : k => v if v.public }
+  name        = "${each.key}-tg-${substr(md5(each.key), 0, 6)}"
+  port        = each.value.port
+  protocol    = upper(each.value.protocol)
+  vpc_id      = var.vpc_id
+  target_type = "ip"
+  health_check {
+    path                = (upper(each.value.protocol) == "HTTP" || upper(each.value.protocol) == "HTTPS") ? lookup(each.value, "health_check", "") : null
+    protocol            = upper(each.value.protocol)
+    matcher             = "200-399"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
+  lifecycle {
+    create_before_destroy = true
   }
   tags = var.tags
 }

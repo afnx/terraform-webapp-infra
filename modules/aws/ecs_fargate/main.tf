@@ -111,15 +111,23 @@ resource "aws_ecs_task_definition" "container" {
         "CMD-SHELL",
         "curl -f http://localhost:${each.value.port}${lookup(each.value, "health_check", "") != null ? lookup(each.value, "health_check", "") : ""} || exit 1"
       ]
-      interval    = 30
-      timeout     = 5
-      retries     = 3
-      startPeriod = 10
+      interval    = lookup(each.value, "health_check_interval", 30)
+      timeout     = lookup(each.value, "health_check_timeout", 5)
+      retries     = lookup(each.value, "health_check_retries", 3)
+      startPeriod = lookup(each.value, "health_check_start_period", 0)
     } : null
     environment = lookup(each.value, "environment", null) != null ? [
       for k, v in each.value.environment : { name = k, value = v }
     ] : null
     secrets = lookup(each.value, "secrets", null) != null ? each.value.secrets : null
+    logConfiguration = lookup(each.value, "enable_logs", true) == true ? {
+      logDriver = "awslogs"
+      options = {
+        awslogs-group         = var.log_group_name
+        awslogs-region        = var.region
+        awslogs-stream-prefix = each.key
+      }
+    } : null
   }])
   tags = var.tags
 }

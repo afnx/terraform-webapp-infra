@@ -49,6 +49,7 @@ aws_ecs_task_definition_family_name       = "webapp-task-family" # Set a unique 
 aws_ecs_service_name                      = "webapp-ecs-service" # Set a unique name for the ECS service
 aws_service_connect_namespace             = "webapp-namespace"   # Set a unique name for the Service Connect namespace
 aws_service_connect_namespace_description = "Service Connect namespace for internal service discovery"
+aws_cloudwatch_log_group_name             = "webapp-log-group" # Set a unique name for the CloudWatch log group
 
 # Database Configuration
 # Define your databases here if needed. You can configure multiple databases with different engines.
@@ -96,16 +97,21 @@ aws_databases = {
 # Autoscaling can be configured per container. If not specified, autoscaling is disabled.
 aws_containers = {
   web = {
-    image         = "nginx:latest" # Your custom image
-    cpu           = 256            # CPU units (256 = 0.25 vCPU, 512 = 0.5 vCPU, 1024 = 1 vCPU, etc.)
-    memory        = 512            # Memory in MB
-    port          = 80             # Container port to expose
-    health_check  = "/"            # Health check path (OPTIONAL)
-    public        = true           # Whether this container is public (accessible via ALB)
-    domain        = "example.com"  # Domain or subdomain for routing (e.g., "api.example.com") (OPTIONAL)
-    protocol      = "HTTPS"        # Protocol used by the container (e.g., HTTP, HTTPS, TCP)
-    desired_count = 2              # Number of desired task instances (OPTIONAL, default is 1)
-    environment = {                # Environment variables (OPTIONAL)
+    image                     = "nginx:latest" # Your custom image
+    cpu                       = 256            # CPU units (256 = 0.25 vCPU, 512 = 0.5 vCPU, 1024 = 1 vCPU, etc.)
+    memory                    = 512            # Memory in MB
+    port                      = 80             # Container port to expose
+    health_check              = "/"            # Health check path (OPTIONAL)
+    health_check_interval     = 30             # Health check interval in seconds (OPTIONAL, default is 30)
+    health_check_timeout      = 5              # Health check timeout in seconds (OPTIONAL, default is 5)
+    health_check_retries      = 3              # Health check retries (OPTIONAL, default is 3)
+    health_check_start_period = 0              # Health check start period in seconds (OPTIONAL, default is 0)
+    public                    = true           # Whether this container is public (accessible via ALB)
+    domain                    = "example.com"  # Domain or subdomain for routing (e.g., "api.example.com") (OPTIONAL)
+    protocol                  = "HTTPS"        # Protocol used by the container (e.g., HTTP, HTTPS, TCP)
+    desired_count             = 2              # Number of desired task instances (OPTIONAL, default is 1)
+    enable_logs               = true           # Enable CloudWatch logging for this container (OPTIONAL, default is true)
+    environment = {                            # Environment variables (OPTIONAL)
       ENVIRONMENT   = "production"
       LOG_LEVEL     = "info"
       API_URL       = "https://api.example.com"
