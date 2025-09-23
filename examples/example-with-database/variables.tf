@@ -12,17 +12,22 @@ variable "aws_domain_name" {
 
 variable "aws_containers" {
   type = map(object({
-    image         = string
-    cpu           = number
-    memory        = number
-    port          = number
-    health_check  = optional(string)
-    public        = bool
-    domain        = optional(string)
-    protocol      = string
-    port_name     = optional(string)
-    desired_count = optional(number)
-    environment   = optional(map(string))
+    image                     = string
+    cpu                       = number
+    memory                    = number
+    port                      = number
+    health_check              = optional(string)
+    health_check_interval     = optional(number)
+    health_check_timeout      = optional(number)
+    health_check_retries      = optional(number)
+    health_check_start_period = optional(number)
+    public                    = bool
+    domain                    = optional(string)
+    protocol                  = string
+    port_name                 = optional(string)
+    desired_count             = optional(number)
+    environment               = optional(map(string))
+    enable_logs               = optional(bool, true)
     secrets = optional(list(object({
       name      = string
       valueFrom = string
