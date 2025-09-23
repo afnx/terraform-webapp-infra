@@ -125,6 +125,26 @@ terraform apply
 > - **Permissions Required:**  
 >   The IAM user or role running Terraform must have permissions to read from Secrets Manager or Parameter Store for any referenced secrets. Ensure you grant these permissions before applying your infrastructure.
 
+## Validating Domain Ownership for AWS Certificate Manager
+
+When creating **public certificates** with AWS Certificate Manager (ACM), AWS must validate that you control the domain. During `terraform apply`, you might see repeated messages like:
+
+```
+module.aws_route53[0].aws_acm_certificate_validation.cert_validation: Still creating...
+```
+
+This means ACM is waiting for you to complete domain ownership validation. To resolve this:
+
+1. **Go to the [AWS Certificate Manager Console](https://console.aws.amazon.com/acm/home).**
+2. Find the certificate Terraform is trying to create (it will be in "Pending validation" state).
+3. Expand the certificate details to see the **Domains** section.
+4. Add the required DNS validation records (CNAME) to your domains DNS records.
+5. Once validation is complete, ACM will issue the certificate and the Terraform apply will finish.
+6. For more information, see the [AWS Certificate Manager User Guide](https://docs.aws.amazon.com/acm/latest/userguide/domain-ownership-validation.html).
+
+> **Tip:**  
+> DNS validation for ACM public certificates can take up to 30 minutes or more. If you see the message above for an extended time, double-check that the DNS records are present and correct.
+
 ## Infrastructure Schema
 
 The following diagram illustrates the typical architecture provisioned by this module for a containerized web application on AWS. It includes networking, compute, database, load balancing, and certificate management components and how they interact:
