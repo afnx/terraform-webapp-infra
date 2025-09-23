@@ -22,9 +22,11 @@ module "aws_vpc" {
   source                  = "./modules/aws/vpc"
   count                   = var.deploy_aws ? 1 : 0
   providers               = { aws = aws.primary }
+  region                  = var.aws_region
   vpc_cidr                = var.aws_vpc_cidr
   public_subnet_cidrs     = var.aws_public_subnet_cidrs
   private_subnet_cidrs    = var.aws_private_subnet_cidrs
+  availability_zones      = var.aws_subnet_availability_zones
   vpc_flow_logs_role_name = var.aws_vpc_flow_logs_role_name
   tags                    = var.aws_tags
 }
@@ -125,4 +127,7 @@ module "aws_ecs_fargate" {
   service_connect_namespace             = aws_service_discovery_private_dns_namespace.service_connect[0].id
   containers                            = var.aws_containers
   tags                                  = var.aws_tags
+  depends_on = [
+    aws_service_discovery_private_dns_namespace.service_connect
+  ]
 }
