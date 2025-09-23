@@ -33,7 +33,7 @@ You can use this module to quickly provision infrastructure for your containeriz
 
 ```hcl
 module "webapp_infra" {
-  source = "github.com/afnx/terraform-webapp-infra//?ref=v0.0.3"
+  source = "git::https://github.com/afnx/terraform-webapp-infra.git//?ref=v0.0.4"
 
   deploy_aws = true
 
