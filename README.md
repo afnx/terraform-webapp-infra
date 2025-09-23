@@ -85,7 +85,7 @@ module "webapp_infra" {
         DB_PASSWORD = "arn:aws:secretsmanager:us-west-2:123456789012:secret:db_password"
         API_KEY     = "arn:aws:ssm:us-west-2:123456789012:parameter/api_key"
       }
-      autoscaling = { # Autoscaling configuration (OPTIONAL)
+      autoscaling = {
         min_capacity       = 2
         max_capacity       = 5
         target_cpu         = 70
