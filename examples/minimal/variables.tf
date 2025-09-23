@@ -20,6 +20,7 @@ variable "aws_containers" {
     public        = bool
     domain        = optional(string)
     protocol      = string
+    port_name     = optional(string)
     desired_count = optional(number)
     environment   = optional(map(string))
     secrets = optional(list(object({
