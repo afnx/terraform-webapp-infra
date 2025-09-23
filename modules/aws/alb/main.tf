@@ -41,7 +41,8 @@ resource "aws_lb_listener" "http" {
       status_code  = "404"
     }
   }
-  tags = var.tags
+  depends_on = [aws_lb_target_group.container]
+  tags       = var.tags
 }
 
 locals {
@@ -63,7 +64,8 @@ resource "aws_lb_listener" "https" {
       status_code  = "404"
     }
   }
-  tags = var.tags
+  depends_on = [aws_lb_target_group.container]
+  tags       = var.tags
 }
 
 resource "aws_lb_listener_rule" "http" {
