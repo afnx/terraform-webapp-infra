@@ -71,12 +71,11 @@ resource "aws_security_group" "ecs_tasks" {
   description = var.ecs_security_group_description
   vpc_id      = var.vpc_id
   ingress {
-    from_port = 0
-    to_port   = 65535
-    protocol  = "tcp"
-    # tfsec:ignore:aws-ec2-no-public-egress-sgr
-    security_groups = [aws_security_group.ecs_tasks.id]
-    description     = "Allow ECS tasks to communicate with each other"
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    self        = true
+    description = "Allow ECS tasks to communicate with each other"
   }
   egress {
     from_port = 0
