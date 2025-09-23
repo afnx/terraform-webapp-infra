@@ -57,6 +57,11 @@ variable "ecs_service_name" {
   description = "Name of the ECS service"
 }
 
+variable "service_connect_namespace" {
+  type        = string
+  description = "Cloud Map namespace for ECS Service Connect"
+}
+
 variable "containers" {
   type = map(object({
     image         = string
@@ -67,6 +72,7 @@ variable "containers" {
     public        = bool
     domain        = optional(string)
     protocol      = string
+    port_name     = optional(string)
     desired_count = optional(number)
     environment   = optional(map(string))
     secrets = optional(list(object({
