@@ -88,6 +88,12 @@ resource "aws_security_group" "ecs_tasks" {
   tags = var.tags
 }
 
+resource "aws_cloudwatch_log_group" "ecs" {
+  name              = var.log_group_name
+  retention_in_days = 30
+  tags              = var.tags
+}
+
 resource "aws_ecs_task_definition" "container" {
   for_each                 = var.containers
   family                   = "${var.ecs_task_definition_family_name}-${each.key}"
@@ -129,6 +135,7 @@ resource "aws_ecs_task_definition" "container" {
       }
     } : null
   }])
+  depends_on = [aws_cloudwatch_log_group.ecs]
   tags = var.tags
 }
 
