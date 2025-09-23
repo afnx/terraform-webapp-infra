@@ -28,7 +28,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution" {
 locals {
   secrets_arns = flatten([
     for c in values(var.containers) : (
-      lookup(c, "secrets", []) != [] ?
+      c.secrets != null ?
       [for s in c.secrets : s.valueFrom] :
       []
     )
