@@ -25,6 +25,47 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+locals {
+  secrets_arns = flatten([
+    for c in values(var.containers) : (
+      lookup(c, "secrets", []) != [] ?
+      [for s in c.secrets : s.valueFrom] :
+      []
+    )
+  ])
+  ssm_arns            = [for arn in local.secrets_arns : arn if can(regex("^arn:aws:ssm:", arn))]
+  secretsmanager_arns = [for arn in local.secrets_arns : arn if can(regex("^arn:aws:secretsmanager:", arn))]
+}
+
+resource "aws_iam_role_policy" "ecs_task_secrets_access" {
+  count = length(local.secrets_arns) > 0 ? 1 : 0
+
+  name = "${var.ecs_task_execution_role_name}SecretsAccess"
+  role = aws_iam_role.ecs_task_execution.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ssm:GetParameters",
+          "ssm:GetParameter",
+          "ssm:GetParametersByPath"
+        ]
+        Resource = local.ssm_arns
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ]
+        Resource = local.secretsmanager_arns
+      }
+    ]
+  })
+}
+
 resource "aws_security_group" "ecs_tasks" {
   name        = var.ecs_security_group_name
   description = var.ecs_security_group_description
@@ -64,6 +105,10 @@ resource "aws_ecs_task_definition" "container" {
       retries     = 3
       startPeriod = 10
     } : null
+    environment = lookup(each.value, "environment", null) != null ? [
+      for k, v in each.value.environment : { name = k, value = v }
+    ] : null
+    secrets = lookup(each.value, "secrets", null) != null ? each.value.secrets : null
   }])
   tags = var.tags
 }
