@@ -70,6 +70,13 @@ resource "aws_security_group" "ecs_tasks" {
   name        = var.ecs_security_group_name
   description = var.ecs_security_group_description
   vpc_id      = var.vpc_id
+  ingress {
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    self        = true
+    description = "Allow ECS tasks to communicate with each other"
+  }
   egress {
     from_port = 0
     to_port   = 0
@@ -97,6 +104,7 @@ resource "aws_ecs_task_definition" "container" {
     essential = true
     portMappings = [{
       containerPort = each.value.port
+      name          = lookup(each.value, "port_name", "http")
     }]
     healthCheck = lookup(each.value, "health_check", "") != "" ? {
       command     = ["CMD-SHELL", "curl -f http://localhost:${each.value.port}${lookup(each.value, "health_check", "")} || exit 1"]
@@ -131,6 +139,18 @@ resource "aws_ecs_service" "container" {
       target_group_arn = var.alb_target_groups[each.key].target_group_arn
       container_name   = each.key
       container_port   = each.value.port
+    }
+  }
+  service_connect_configuration {
+    enabled   = true
+    namespace = var.service_connect_namespace
+    service {
+      port_name      = lookup(each.value, "port_name", "http")
+      discovery_name = each.key
+      client_alias {
+        port     = each.value.port
+        dns_name = each.key
+      }
     }
   }
   tags       = var.tags

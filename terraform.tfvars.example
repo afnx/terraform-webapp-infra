@@ -46,6 +46,8 @@ aws_ecs_security_group_description        = "Security group for ECS tasks"
 aws_ecs_security_group_egress_cidr_blocks = ["0.0.0.0/0"]        # Allow all outbound traffic or restrict as needed
 aws_ecs_task_definition_family_name       = "webapp-task-family" # Set a unique family name for the ECS task definition
 aws_ecs_service_name                      = "webapp-ecs-service" # Set a unique name for the ECS service
+aws_service_connect_namespace             = "webapp-namespace"   # Set a unique name for the Service Connect namespace
+aws_service_connect_namespace_description = "Service Connect namespace for internal service discovery"
 
 # Database Configuration
 # Define your databases here if needed. You can configure multiple databases with different engines.

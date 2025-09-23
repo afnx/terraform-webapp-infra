@@ -133,6 +133,18 @@ variable "aws_ecs_service_name" {
   default     = "webapp-ecs-service"
 }
 
+variable "aws_service_connect_namespace" {
+  type        = string
+  description = "The Service Connect namespace for the ECS cluster"
+  default     = "webapp-service-connect"
+}
+
+variable "aws_service_connect_namespace_description" {
+  type        = string
+  description = "Description for the Service Connect namespace"
+  default     = "Namespace for the webapp service connect"
+}
+
 variable "aws_databases" {
   type = map(object({
     engine = string
@@ -175,6 +187,7 @@ variable "aws_containers" {
     public        = bool
     domain        = optional(string)
     protocol      = string
+    port_name     = optional(string)
     desired_count = optional(number)
     environment   = optional(map(string))
     secrets = optional(list(object({

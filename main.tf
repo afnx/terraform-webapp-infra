@@ -100,6 +100,14 @@ module "aws_database" {
   tags                         = var.aws_tags
 }
 
+resource "aws_service_discovery_private_dns_namespace" "service_connect" {
+  count       = var.deploy_aws ? 1 : 0
+  name        = var.aws_service_connect_namespace
+  description = var.aws_service_connect_namespace_description
+  vpc         = module.aws_vpc[0].vpc_id
+  tags        = var.aws_tags
+}
+
 module "aws_ecs_fargate" {
   source                                = "./modules/aws/ecs_fargate"
   count                                 = var.deploy_aws ? 1 : 0
@@ -114,6 +122,7 @@ module "aws_ecs_fargate" {
   ecs_security_group_egress_cidr_blocks = var.aws_ecs_security_group_egress_cidr_blocks
   ecs_task_definition_family_name       = var.aws_ecs_task_definition_family_name
   ecs_service_name                      = var.aws_ecs_service_name
+  service_connect_namespace             = aws_service_discovery_private_dns_namespace.service_connect[0].id
   containers                            = var.aws_containers
   tags                                  = var.aws_tags
 }
