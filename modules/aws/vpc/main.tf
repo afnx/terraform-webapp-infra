@@ -94,7 +94,7 @@ resource "aws_kms_key_policy" "vpc_flow_logs" {
       {
         Sid       = "Allow administration of the key"
         Effect    = "Allow"
-        Principal = { AWS = "*" }
+        Principal = { AWS = data.aws_caller_identity.current.arn }
         Action    = "kms:*"
         Resource  = "*"
       },
@@ -102,7 +102,7 @@ resource "aws_kms_key_policy" "vpc_flow_logs" {
         Sid    = "Allow CloudWatch Logs to use the key"
         Effect = "Allow"
         Principal = {
-          Service = "logs.${var.region}.amazonaws.com"
+          Service = "logs.amazonaws.com"
         }
         Action = [
           "kms:Encrypt",
@@ -112,11 +112,6 @@ resource "aws_kms_key_policy" "vpc_flow_logs" {
           "kms:DescribeKey"
         ]
         Resource = "*"
-        Condition = {
-          StringEquals = {
-            "kms:EncryptionContext:aws:logs:arn" = "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/vpc/${aws_vpc.main.id}/flow-logs"
-          }
-        }
       }
     ]
   })
@@ -154,7 +149,22 @@ resource "aws_iam_role" "vpc_flow_logs" {
   tags = var.tags
 }
 
-resource "aws_iam_role_policy_attachment" "vpc_flow_logs" {
-  role       = aws_iam_role.vpc_flow_logs.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2FlowLogsRole"
+resource "aws_iam_role_policy" "vpc_flow_logs" {
+  role = aws_iam_role.vpc_flow_logs.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogGroups",
+          "logs:DescribeLogStreams"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
 }
