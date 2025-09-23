@@ -75,6 +75,23 @@ module "webapp_infra" {
       public   = true
       protocol = "HTTPS"
       domain   = "example.com"
+      environment = {
+        ENVIRONMENT   = "production"
+        LOG_LEVEL     = "info"
+        PORT          = "80"
+        MY_CUSTOM_VAR = "custom_value"
+      }
+      secrets = {
+        DB_PASSWORD = "arn:aws:secretsmanager:us-west-2:123456789012:secret:db_password"
+        API_KEY     = "arn:aws:ssm:us-west-2:123456789012:parameter/api_key"
+      }
+      autoscaling = { # Autoscaling configuration (OPTIONAL)
+        min_capacity       = 2
+        max_capacity       = 5
+        target_cpu         = 70
+        scale_in_cooldown  = 60
+        scale_out_cooldown = 60
+      }
     }
   }
 }
@@ -88,6 +105,19 @@ terraform init
 terraform plan
 terraform apply
 ```
+> ⚠️ **Important Security Warnings**
+>
+> - **NEVER HARDCODE SECRETS:**  
+>   NEVER HARDCODE SECRETS, PASSWORDS, OR SENSITIVE VALUES DIRECTLY IN TERRAFORM FILES, VARIABLES, OR VERSION CONTROL. ALWAYS USE SECURE REFERENCES.
+>
+> - **Secrets and Environment Variables:**  
+>   Store sensitive values (such as environment variables for containers or database passwords) in a secure service like AWS Secrets Manager or SSM Parameter Store **before** deploying. Reference their ARNs in your module configuration as shown in the example above.
+>
+> - **Database Passwords:**  
+>   When provisioning managed databases (e.g., RDS), create the database password in Secrets Manager or Parameter Store first, and use the ARN in the `rds_password_arn` field.
+>
+> - **Permissions Required:**  
+>   The IAM user or role running Terraform must have permissions to read from Secrets Manager or Parameter Store for any referenced secrets. Ensure you grant these permissions before applying your infrastructure.
 
 ## Infrastructure Schema
 
