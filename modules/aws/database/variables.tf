@@ -12,7 +12,7 @@ variable "databases" {
     rds_engine_version              = optional(string)
     rds_db_name                     = optional(string)
     rds_username                    = optional(string)
-    rds_password                    = optional(string)
+    rds_password_arn                = optional(string)
     rds_allocated_storage           = optional(number)
     rds_storage_type                = optional(string)
     rds_multi_az                    = optional(bool)
