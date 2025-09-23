@@ -54,21 +54,21 @@ aws_ecs_service_name                      = "webapp-ecs-service" # Set a unique 
 # Ensure that the secrets or parameters for database passwords are created in AWS Secrets Manager or Parameter Store.
 aws_databases = {
   mypostgresdb = {
-    engine                          = "rds"                                                                    # "rds" or "dynamodb"
-    rds_instance_class              = "db.t3.micro"                                                            # RDS instance class
-    rds_engine                      = "postgres"                                                               # RDS engine (e.g., "mysql", "postgres", etc.)
-    rds_engine_version              = "13.4"                                                                   # RDS engine version
-    rds_db_name                     = "mydb"                                                                   # Initial database name
-    rds_username                    = "admin"                                                                  # Master username
-    rds_password_arn                = "arn:aws:secretsmanager:us-west-2:123456789012:secret:mypostgresdb_pass" # ARN of the Secrets Manager secret or Parameter Store ARN containing the password
-    rds_allocated_storage           = 20                                                                       # Storage in GB
-    rds_storage_type                = "gp2"                                                                    # Storage type (e.g., "gp2", "io1", etc.)
-    rds_multi_az                    = false                                                                    # Multi-AZ deployment
-    rds_port                        = 5432                                                                     # Database port
-    rds_publicly_accessible         = false                                                                    # Whether the DB is publicly accessible
-    rds_skip_final_snapshot         = true                                                                     # Skip final snapshot on deletion
-    rds_ingress_allowed_cidr_blocks = ["0.0.0.0/0"]                                                            # CIDR blocks allowed to access RDS
-    rds_egress_cidr_blocks          = ["0.0.0.0/0"]                                                            # CIDR blocks allowed for RDS egress
+    engine                          = "rds"                                                                         # "rds" or "dynamodb"
+    rds_instance_class              = "db.t3.micro"                                                                 # RDS instance class
+    rds_engine                      = "postgres"                                                                    # RDS engine (e.g., "mysql", "postgres", etc.)
+    rds_engine_version              = "13.4"                                                                        # RDS engine version
+    rds_db_name                     = "mydb"                                                                        # Initial database name
+    rds_username                    = "admin"                                                                       # Master username
+    rds_password_arn                = "test_arn:aws:secretsmanager:us-west-2:123456789012:secret:mypostgresdb_pass" # ARN of the Secrets Manager secret or Parameter Store ARN containing the password
+    rds_allocated_storage           = 20                                                                            # Storage in GB
+    rds_storage_type                = "gp2"                                                                         # Storage type (e.g., "gp2", "io1", etc.)
+    rds_multi_az                    = false                                                                         # Multi-AZ deployment
+    rds_port                        = 5432                                                                          # Database port
+    rds_publicly_accessible         = false                                                                         # Whether the DB is publicly accessible
+    rds_skip_final_snapshot         = true                                                                          # Skip final snapshot on deletion
+    rds_ingress_allowed_cidr_blocks = ["0.0.0.0/0"]                                                                 # CIDR blocks allowed to access RDS
+    rds_egress_cidr_blocks          = ["0.0.0.0/0"]                                                                 # CIDR blocks allowed for RDS egress
   }
   mydynamodb = {
     engine                  = "dynamodb"        # "rds" or "dynamodb"
@@ -109,6 +109,16 @@ aws_containers = {
       PORT          = "80"
       MY_CUSTOM_VAR = "custom_value"
     }
+    secrets = [ # Secrets from AWS Secrets Manager or Parameter Store (OPTIONAL)
+      {
+        name      = "DB_PASSWORD"
+        valueFrom = "test_arn:aws:secretsmanager:us-west-2:123456789012:secret:db_password" # ARN of the secret or parameter
+      },
+      {
+        name      = "API_KEY"
+        valueFrom = "test_arn:aws:ssm:us-west-2:123456789012:parameter/api_key" # ARN of the secret or parameter
+      }
+    ]
     autoscaling = { # Autoscaling configuration (OPTIONAL)
       min_capacity       = 2
       max_capacity       = 5
