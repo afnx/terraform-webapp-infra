@@ -109,16 +109,6 @@ aws_containers = {
       PORT          = "80"
       MY_CUSTOM_VAR = "custom_value"
     }
-    secrets = [ # Secrets from AWS Secrets Manager or Parameter Store (OPTIONAL)
-      {
-        name      = "DB_PASSWORD"
-        valueFrom = "arn:aws:secretsmanager:us-west-2:123456789012:secret:db_password" # ARN of the secret or parameter
-      },
-      {
-        name      = "API_KEY"
-        valueFrom = "arn:aws:ssm:us-west-2:123456789012:parameter/api_key" # ARN of the secret or parameter
-      }
-    ]
     autoscaling = { # Autoscaling configuration (OPTIONAL)
       min_capacity       = 2
       max_capacity       = 5
