@@ -42,7 +42,6 @@ resource "aws_security_group" "rds" {
   tags = var.tags
 }
 
-
 resource "aws_db_subnet_group" "rds" {
   for_each   = { for k, db in var.databases : k => db if db.engine == "rds" }
   name       = "${each.key}-subnet-group"
@@ -50,15 +49,45 @@ resource "aws_db_subnet_group" "rds" {
   tags       = var.tags
 }
 
+locals {
+  rds_password_secretsmanager = {
+    for k, db in var.databases :
+    k => db.rds_password_arn
+    if db.engine == "rds" && db.rds_password_arn != null && can(regex("^arn:aws:secretsmanager:", db.rds_password_arn))
+  }
+  rds_password_ssm = {
+    for k, db in var.databases :
+    k => db.rds_password_arn
+    if db.engine == "rds" && db.rds_password_arn != null && can(regex("^arn:aws:ssm:", db.rds_password_arn))
+  }
+}
+
+data "aws_secretsmanager_secret_version" "rds_password" {
+  for_each  = local.rds_password_secretsmanager
+  secret_id = each.value
+}
+
+data "aws_ssm_parameter" "rds_password" {
+  for_each        = local.rds_password_ssm
+  name            = each.value
+  with_decryption = true
+}
+
 resource "aws_db_instance" "rds" {
-  for_each               = { for k, db in var.databases : k => db if db.engine == "rds" }
-  identifier             = each.value.rds_db_name
-  instance_class         = each.value.rds_instance_class
-  engine                 = each.value.rds_engine
-  engine_version         = each.value.rds_engine_version
-  db_name                = each.value.rds_db_name
-  username               = each.value.rds_username
-  password               = each.value.rds_password
+  for_each       = { for k, db in var.databases : k => db if db.engine == "rds" }
+  identifier     = each.value.rds_db_name
+  instance_class = each.value.rds_instance_class
+  engine         = each.value.rds_engine
+  engine_version = each.value.rds_engine_version
+  db_name        = each.value.rds_db_name
+  username       = each.value.rds_username
+  password = (
+    contains(keys(data.aws_secretsmanager_secret_version.rds_password), each.key) ?
+    data.aws_secretsmanager_secret_version.rds_password[each.key].secret_string :
+    contains(keys(data.aws_ssm_parameter.rds_password), each.key) ?
+    data.aws_ssm_parameter.rds_password[each.key].value :
+    each.value.rds_password_arn
+  )
   allocated_storage      = each.value.rds_allocated_storage
   storage_type           = lookup(each.value, "rds_storage_type", "gp2")
   multi_az               = lookup(each.value, "rds_multi_az", false)
