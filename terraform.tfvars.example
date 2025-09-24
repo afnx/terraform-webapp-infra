@@ -114,6 +114,7 @@ aws_containers = {
     port_name                        = "http"         # Port name is used by the container (OPTIONAL, default is "http")
     desired_count                    = 2              # Number of desired task instances (OPTIONAL, default is 1)
     enable_logs                      = true           # Enable CloudWatch logging for this container (OPTIONAL, default is true)
+    redirect_to_https                = true           # Redirect HTTP to HTTPS (only applicable if protocol is HTTPS) (OPTIONAL, default is true)
     environment = {                                   # Environment variables (OPTIONAL)
       ENVIRONMENT   = "production"
       LOG_LEVEL     = "info"

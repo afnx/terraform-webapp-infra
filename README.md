@@ -33,7 +33,7 @@ You can use this module to quickly provision infrastructure for your containeriz
 
 ```hcl
 module "webapp_infra" {
-  source = "git::https://github.com/afnx/terraform-webapp-infra.git//?ref=v0.0.13"
+  source = "git::https://github.com/afnx/terraform-webapp-infra.git//?ref=v0.0.14"
 
   deploy_aws = true
 
@@ -69,13 +69,14 @@ module "webapp_infra" {
 
   aws_containers = {
     web = {
-      image    = "nginx:latest"
-      cpu      = 256
-      memory   = 512
-      port     = 80
-      public   = true
-      protocol = "HTTPS"
-      domain   = "example.com"
+      image             = "nginx:latest"
+      cpu               = 256
+      memory            = 512
+      port              = 80
+      public            = true
+      protocol          = "HTTPS"
+      domain            = "example.com"
+      redirect_to_https = true
       environment = {
         ENVIRONMENT   = "production"
         LOG_LEVEL     = "info"
