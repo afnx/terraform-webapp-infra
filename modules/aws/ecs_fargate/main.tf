@@ -88,6 +88,17 @@ resource "aws_security_group" "ecs_tasks" {
   tags = var.tags
 }
 
+resource "aws_security_group_rule" "alb_to_ecs" {
+  for_each                 = { for k, v in var.containers : k => v.port if v.public }
+  type                     = "ingress"
+  from_port                = each.value
+  to_port                  = each.value
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.ecs_tasks.id
+  source_security_group_id = var.alb_security_group_id
+  description              = "Allow traffic from ALB to ECS task ${each.key} on port ${each.value}"
+}
+
 resource "aws_cloudwatch_log_group" "ecs" {
   name              = var.log_group_name
   retention_in_days = 30
