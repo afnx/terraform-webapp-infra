@@ -70,33 +70,43 @@ resource "aws_security_group" "ecs_tasks" {
   name        = var.ecs_security_group_name
   description = var.ecs_security_group_description
   vpc_id      = var.vpc_id
-  ingress {
-    from_port   = 0
-    to_port     = 65535
-    protocol    = "tcp"
-    self        = true
-    description = "Allow ECS tasks to communicate with each other"
-  }
-  egress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
-    # tfsec:ignore:aws-ec2-no-public-egress-sgr
-    cidr_blocks = var.ecs_security_group_egress_cidr_blocks
-    description = "Allow outbound traffic from ECS tasks"
-  }
-  tags = var.tags
+  tags        = var.tags
+}
+
+resource "aws_security_group_rule" "ecs_tasks_self" {
+  type              = "ingress"
+  from_port         = 0
+  to_port           = 65535
+  protocol          = "tcp"
+  security_group_id = aws_security_group.ecs_tasks.id
+  self              = true
+  description       = "Allow ECS tasks to communicate with each other"
+}
+
+resource "aws_security_group_rule" "ecs_tasks_egress" {
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  security_group_id = aws_security_group.ecs_tasks.id
+  cidr_blocks       = var.ecs_security_group_egress_cidr_blocks
+  description       = "Allow outbound traffic from ECS tasks"
 }
 
 resource "aws_security_group_rule" "alb_to_ecs" {
-  for_each                 = { for k, v in var.containers : k => v.port if v.public }
+  for_each = {
+    for k, v in var.containers : "${k}-${v.port}" => {
+      port = v.port
+      key  = k
+    } if v.public
+  }
   type                     = "ingress"
-  from_port                = each.value
-  to_port                  = each.value
+  from_port                = each.value.port
+  to_port                  = each.value.port
   protocol                 = "tcp"
   security_group_id        = aws_security_group.ecs_tasks.id
   source_security_group_id = var.alb_security_group_id
-  description              = "Allow traffic from ALB to ECS task ${each.key} on port ${each.value}"
+  description              = "Allow traffic from ALB to ECS task ${each.value.key} on port ${each.value.port}"
 }
 
 resource "aws_cloudwatch_log_group" "ecs" {

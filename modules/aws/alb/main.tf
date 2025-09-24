@@ -10,7 +10,7 @@ resource "aws_lb" "main" {
 }
 
 resource "aws_lb_listener" "http" {
-  count             = length([for c in var.containers : c if c.public && lower(c.protocol) == "http"]) > 0 ? 1 : 0
+  count             = length([for c in var.containers : c if c.public]) > 0 ? 1 : 0
   load_balancer_arn = aws_lb.main.arn
   port              = 80
   protocol          = "HTTP"

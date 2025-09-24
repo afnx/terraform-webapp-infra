@@ -21,7 +21,7 @@ module "aws_vpc" {
 }
 
 locals {
-  allow_http  = length([for c in var.aws_containers : c if c.public && lower(c.protocol) == "http"]) > 0
+  allow_http  = length([for c in var.aws_containers : c if c.public]) > 0
   allow_https = length([for c in var.aws_containers : c if c.public && lower(c.protocol) == "https"]) > 0
 }
 
