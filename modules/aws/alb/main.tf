@@ -87,7 +87,7 @@ resource "aws_lb_target_group" "container" {
   vpc_id      = var.vpc_id
   target_type = "ip"
   health_check {
-    path                = (upper(each.value.protocol) == "HTTP" || upper(each.value.protocol) == "HTTPS") ? lookup(each.value, "health_check", "") : null
+    path                = (upper(each.value.protocol) == "HTTP" || upper(each.value.protocol) == "HTTPS") ? lookup(each.value, "health_check", "/") : null
     protocol            = upper(each.value.protocol)
     matcher             = "200-399"
     interval            = 30

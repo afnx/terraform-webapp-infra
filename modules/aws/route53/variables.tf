@@ -18,6 +18,49 @@ variable "subject_alternative_names" {
   description = "A list of additional domain names for the ACM certificate."
 }
 
+variable "alb_dns_name" {
+  type        = string
+  description = "DNS name of the ALB"
+}
+
+variable "alb_zone_id" {
+  type        = string
+  description = "Zone ID of the ALB"
+}
+
+variable "containers" {
+  type = map(object({
+    image                     = string
+    cpu                       = number
+    memory                    = number
+    port                      = number
+    health_check              = optional(string)
+    health_check_interval     = optional(number)
+    health_check_timeout      = optional(number)
+    health_check_retries      = optional(number)
+    health_check_start_period = optional(number)
+    public                    = bool
+    domain                    = optional(string)
+    protocol                  = string
+    port_name                 = optional(string)
+    desired_count             = optional(number)
+    environment               = optional(map(string))
+    enable_logs               = optional(bool, true)
+    secrets = optional(list(object({
+      name      = string
+      valueFrom = string
+    })))
+    autoscaling = optional(object({
+      min_capacity       = number
+      max_capacity       = number
+      target_cpu         = number
+      scale_in_cooldown  = number
+      scale_out_cooldown = number
+    }))
+  }))
+  description = "List of container definitions"
+}
+
 variable "tags" {
   type        = map(string)
   description = "Tags to apply to resources"

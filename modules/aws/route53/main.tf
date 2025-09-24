@@ -21,3 +21,19 @@ resource "aws_acm_certificate_validation" "cert_validation" {
   certificate_arn         = var.certificate_arn
   validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
 }
+
+resource "aws_route53_record" "alb_alias" {
+  for_each = {
+    for c in var.containers : c.domain => c
+    if c.public && lookup(c, "domain", null) != null
+  }
+
+  zone_id = aws_route53_zone.main.id
+  name    = each.value.domain
+  type    = "A"
+  alias {
+    name                   = var.alb_dns_name
+    zone_id                = var.alb_zone_id
+    evaluate_target_health = true
+  }
+}
