@@ -72,6 +72,11 @@ variable "log_group_name" {
   description = "Name of the CloudWatch log group for ECS tasks"
 }
 
+variable "alb_security_group_id" {
+  type        = string
+  description = "Security group ID of the ALB to allow traffic from"
+}
+
 variable "containers" {
   type = map(object({
     image                            = string

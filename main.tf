@@ -121,6 +121,7 @@ module "aws_ecs_fargate" {
   vpc_id                                = module.aws_vpc[0].vpc_id
   private_subnet_ids                    = module.aws_vpc[0].private_subnet_ids
   alb_target_groups                     = module.aws_alb[0].alb_target_groups
+  alb_security_group_id                 = aws_security_group.alb[0].id
   ecs_cluster_name                      = var.aws_ecs_cluster_name
   ecs_task_execution_role_name          = var.aws_ecs_task_execution_role_name
   ecs_security_group_name               = var.aws_ecs_security_group_name
