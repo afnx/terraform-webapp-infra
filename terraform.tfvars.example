@@ -97,21 +97,24 @@ aws_databases = {
 # Autoscaling can be configured per container. If not specified, autoscaling is disabled.
 aws_containers = {
   web = {
-    image                     = "nginx:latest" # Your custom image
-    cpu                       = 256            # CPU units (256 = 0.25 vCPU, 512 = 0.5 vCPU, 1024 = 1 vCPU, etc.)
-    memory                    = 512            # Memory in MB
-    port                      = 80             # Container port to expose
-    health_check              = "/"            # Health check path (OPTIONAL)
-    health_check_interval     = 30             # Health check interval in seconds (OPTIONAL, default is 30)
-    health_check_timeout      = 5              # Health check timeout in seconds (OPTIONAL, default is 5)
-    health_check_retries      = 3              # Health check retries (OPTIONAL, default is 3)
-    health_check_start_period = 0              # Health check start period in seconds (OPTIONAL, default is 0)
-    public                    = true           # Whether this container is public (accessible via ALB)
-    domain                    = "example.com"  # Domain or subdomain for routing (e.g., "api.example.com") (OPTIONAL)
-    protocol                  = "HTTPS"        # Protocol used by the container (e.g., HTTP, HTTPS, TCP)
-    desired_count             = 2              # Number of desired task instances (OPTIONAL, default is 1)
-    enable_logs               = true           # Enable CloudWatch logging for this container (OPTIONAL, default is true)
-    environment = {                            # Environment variables (OPTIONAL)
+    image                            = "nginx:latest" # Your custom image
+    cpu                              = 256            # CPU units (256 = 0.25 vCPU, 512 = 0.5 vCPU, 1024 = 1 vCPU, etc.)
+    memory                           = 512            # Memory in MB
+    port                             = 80             # Container port to expose
+    health_check                     = "/"            # Health check path (OPTIONAL)
+    health_check_interval            = 30             # Health check interval in seconds (OPTIONAL, default is 30)
+    health_check_timeout             = 5              # Health check timeout in seconds (OPTIONAL, default is 5)
+    health_check_retries             = 3              # Health check retries (OPTIONAL, default is 3)
+    health_check_start_period        = 0              # Health check start period in seconds (OPTIONAL, default is 0)
+    health_check_healthy_threshold   = 5              # Healthy threshold (OPTIONAL, default is 5)
+    health_check_unhealthy_threshold = 2              # Unhealthy threshold (OPTIONAL, default
+    public                           = true           # Whether this container is public (accessible via ALB)
+    domain                           = "example.com"  # Domain or subdomain for routing (e.g., "api.example.com") (OPTIONAL)
+    protocol                         = "HTTPS"        # Protocol used by ALB (e.g., HTTP, HTTPS, TCP)
+    port_name                        = "http"         # Port name is used by the container (OPTIONAL, default is "http")
+    desired_count                    = 2              # Number of desired task instances (OPTIONAL, default is 1)
+    enable_logs                      = true           # Enable CloudWatch logging for this container (OPTIONAL, default is true)
+    environment = {                                   # Environment variables (OPTIONAL)
       ENVIRONMENT   = "production"
       LOG_LEVEL     = "info"
       API_URL       = "https://api.example.com"
@@ -145,6 +148,7 @@ aws_containers = {
     public        = true
     domain        = "api.example.com"
     protocol      = "HTTPS"
+    port_name     = "http"
     desired_count = 1
     autoscaling = {
       min_capacity       = 1
@@ -162,5 +166,6 @@ aws_containers = {
     health_check = "/status"
     public       = false
     protocol     = "HTTP"
+    port_name    = "http"
   }
 }
