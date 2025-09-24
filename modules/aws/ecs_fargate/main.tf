@@ -140,12 +140,13 @@ resource "aws_ecs_task_definition" "container" {
 }
 
 resource "aws_ecs_service" "container" {
-  for_each        = var.containers
-  name            = "${var.ecs_service_name}-${each.key}"
-  cluster         = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.container[each.key].arn
-  launch_type     = "FARGATE"
-  desired_count   = lookup(each.value, "desired_count", 1)
+  for_each             = var.containers
+  name                 = "${var.ecs_service_name}-${each.key}"
+  cluster              = aws_ecs_cluster.main.id
+  task_definition      = aws_ecs_task_definition.container[each.key].arn
+  launch_type          = "FARGATE"
+  desired_count        = lookup(each.value, "desired_count", 1)
+  force_new_deployment = true
   network_configuration {
     subnets          = var.private_subnet_ids
     security_groups  = [aws_security_group.ecs_tasks.id]
