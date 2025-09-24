@@ -79,6 +79,36 @@ resource "aws_lb_listener_rule" "https" {
   tags = var.tags
 }
 
+resource "aws_lb_listener_rule" "redirect_to_https" {
+  for_each = {
+    for k, v in var.containers : k => v
+    if v.public && lookup(v, "redirect_to_https", false) && length(aws_lb_listener.http) > 0
+  }
+
+  listener_arn = aws_lb_listener.http[0].arn
+  priority     = 10 + index(keys(var.containers), each.key)
+
+  action {
+    type = "redirect"
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+      host        = lookup(each.value, "domain", null) != null ? each.value.domain : "#{host}"
+      path        = "/#{path}"
+      query       = "#{query}"
+    }
+  }
+
+  condition {
+    host_header {
+      values = lookup(each.value, "domain", null) != null ? [each.value.domain] : ["*"]
+    }
+  }
+
+  tags = var.tags
+}
+
 resource "random_string" "tg_suffix" {
   for_each = { for k, v in var.containers : k => v if v.public }
   length   = 6

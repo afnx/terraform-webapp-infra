@@ -50,6 +50,7 @@ variable "containers" {
     desired_count                    = optional(number)
     environment                      = optional(map(string))
     enable_logs                      = optional(bool, true)
+    redirect_to_https                = optional(bool, false)
     secrets = optional(list(object({
       name      = string
       valueFrom = string
