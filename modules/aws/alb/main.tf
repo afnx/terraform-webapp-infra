@@ -79,25 +79,33 @@ resource "aws_lb_listener_rule" "https" {
   tags = var.tags
 }
 
+resource "random_string" "tg_suffix" {
+  for_each = { for k, v in var.containers : k => v if v.public }
+  length   = 6
+  upper    = false
+  special  = false
+}
+
 resource "aws_lb_target_group" "container" {
   for_each    = { for k, v in var.containers : k => v if v.public }
-  name        = "${each.key}-tg-${substr(md5(each.key), 0, 6)}"
+  name        = "${each.key}-tg-${random_string.tg_suffix[each.key].result}"
   port        = each.value.port
-  protocol    = upper(each.value.protocol)
+  protocol    = upper(each.value.port_name)
   vpc_id      = var.vpc_id
   target_type = "ip"
   health_check {
+    enabled = can(trimspace(each.value.health_check)) && trimspace(each.value.health_check) != "" ? true : false
     path = (
       can(trimspace(each.value.health_check)) && trimspace(each.value.health_check) != "" && substr(trimspace(each.value.health_check), 0, 1) == "/" ?
       trimspace(each.value.health_check) :
       "/"
     )
-    protocol            = upper(each.value.protocol)
+    protocol            = upper(each.value.port_name)
     matcher             = "200-399"
-    interval            = 30
-    timeout             = 5
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
+    interval            = lookup(each.value, "health_check_interval", 30)
+    timeout             = lookup(each.value, "health_check_timeout", 5)
+    healthy_threshold   = lookup(each.value, "health_check_healthy_threshold", 5)
+    unhealthy_threshold = lookup(each.value, "health_check_unhealthy_threshold", 2)
   }
   lifecycle {
     create_before_destroy = true
