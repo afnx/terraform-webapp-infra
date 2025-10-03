@@ -76,6 +76,7 @@ module "webapp_infra" {
       public            = true
       protocol          = "HTTPS"
       domain            = "example.com"
+      enable_logs       = true
       redirect_to_https = true
       environment = {
         ENVIRONMENT   = "production"
