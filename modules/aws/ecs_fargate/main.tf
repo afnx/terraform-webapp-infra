@@ -147,7 +147,7 @@ resource "aws_ecs_task_definition" "container" {
       for k, v in each.value.environment : { name = k, value = v }
     ] : null
     secrets = lookup(each.value, "secrets", null) != null ? each.value.secrets : null
-    logConfiguration = lookup(each.value, "enable_logs", true) == true ? {
+    logConfiguration = lookup(each.value, "enable_logs", false) == true ? {
       logDriver = "awslogs"
       options = {
         awslogs-group         = var.log_group_name
